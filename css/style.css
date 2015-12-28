@@ -1,0 +1,10 @@
+.textC {
+    text-align: center;
+}
+.marginC {
+    margin: 0 auto;
+}
+.cell {
+    width: 2em;
+    height: 2em;
+}
