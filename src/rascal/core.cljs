@@ -4,6 +4,7 @@
 (enable-console-print!)
 
 (def . ".")
+(def c "@")
 (def board-width 20)
 (def board
   [. . . . . . . . . . . . . . . . . . . .
@@ -11,7 +12,7 @@
    . . . . . . . . . . . . . . . . . . . .
    . . . . . . . . . . . . . . . . . . . .
    . . . . . . . . . . . . . . . . . . . .
-   . . . . . . . . . . . . . . . . . . . .
+   . . . . . c . . . . . . . . . . . . . .
    . . . . . . . . . . . . . . . . . . . .
    . . . . . . . . . . . . . . . . . . . .
    . . . . . . . . . . . . . . . . . . . .
@@ -27,9 +28,15 @@
    . . . . . . . . . . . . . . . . . . . .
    . . . . . . . . . . . . . . . . . . . .])
 
+(defn keydown-handler
+  [e]
+  (println (-> e .-keyCode)))
+
 (defn main
   [board width]
-  [:div.textC
+  [:div#game.textC
+   {:tab-index 0
+    :on-key-down keydown-handler}
    [:h1 "Rascal"]
    [:table.marginC
     [:tbody
@@ -43,6 +50,11 @@
           row)])
       (partition width board))]]])
 
+(def main-focused
+  (-> main (with-meta {:component-did-mount
+                       (fn [this]
+                         (.focus (js/document.getElementById "game")))})))
+
 (defn ^:export run
   []
-  (r/render [main board board-width] (js/document.getElementById "app")))
+  (r/render [main-focused board board-width] (js/document.getElementById "app")))
