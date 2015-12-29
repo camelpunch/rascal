@@ -8,6 +8,6 @@
     (include-css "https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css"
                  "style.css")]
    [:body
-    [:div#app] 
+    [:div#app]
     (include-js "main.js")
     [:script "rascal.core.run();"]]))
