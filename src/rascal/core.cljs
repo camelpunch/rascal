@@ -1,40 +1,22 @@
 (ns rascal.core
   (:require [reagent.core :as r]
-            [rascal.board :as b]))
+            [rascal.board :as b :refer [->Board]]))
 
 (enable-console-print!)
 
-(def state (r/atom {:board (b/create-board)}))
-
-(defn left
-  [s]
-  (b/move-left (:board s) b/c))
-
-(defn right
-  [s]
-  (println "right")
-  s)
-
-(defn up
-  [s]
-  (println "up")
-  s)
-
-(defn down
-  [s]
-  (println "down")
-  s)
+(def state (r/atom {:board (->Board 15 15)
+                    :player {:coords {:x 7 :y 7}}}))
 
 (def keymap
-  {72 left
-   76 right
-   75 up
-   74 down})
+  {72 b/move-left
+   76 b/move-right
+   75 b/move-up
+   74 b/move-down})
 
 (defn keydown-handler
   [e]
-  (swap! state (keymap (-> e .-keyCode)))
-  (println @state))
+  (when-let [f (keymap (-> e .-keyCode))]
+    (swap! state f)))
 
 (defn main
   []
@@ -44,16 +26,15 @@
    [:h1 "Rascal"]
    [:table.marginC
     [:tbody
-     (let [board (:board @state)]
-       (map-indexed
-        (fn [row-idx row]
-          [:tr {:key (str "tr" row-idx)}
-           (map-indexed
-            (fn [cell-idx cell]
-              [:td.cell {:key (str "td" cell-idx)}
-               cell])
-            row)])
-        board))]]])
+     (map-indexed
+      (fn [row-idx row]
+        [:tr {:key (str "tr" row-idx)}
+         (map-indexed
+          (fn [cell-idx cell]
+            [:td.cell {:key (str "td" cell-idx)}
+             cell])
+          row)])
+      (b/render @state))]]])
 
 (def main-focused
   (-> main (with-meta {:component-did-mount
