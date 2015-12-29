@@ -2,6 +2,7 @@
                           [adzerk/boot-reload "0.4.2" :scope "test"]
                           [adzerk/boot-test "1.1.0" :scope "test"]
                           [pandeiro/boot-http "0.7.1-SNAPSHOT" :scope "test"]
+                          [org.clojure/tools.namespace "0.2.11" :scope "test"]
                           [org.clojure/clojurescript "1.7.170"]
                           [reagent "0.6.0-alpha"]
                           [bidi "1.24.0"]
