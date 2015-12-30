@@ -1,13 +1,10 @@
 (ns rascal.board)
 
-(declare toward max-x max-y x-axis y-axis)
-
-(def . ".")
-(def c "@")
+(declare add-tiles max-x max-y toward x-axis y-axis)
 
 (defn ->Board [width height]
   (vec (repeat height
-               (vec (repeat width .)))))
+               (vec (repeat width \.)))))
 
 (defn move-left
   [s]
@@ -26,17 +23,28 @@
   (update-in s y-axis (toward (max-y board) inc)))
 
 (defn render
-  [{board :board {{x :x y :y} :coords} :player :as s}]
-  (assoc-in board [y x] c))
+  [{board    :board
+    player   :player
+    monsters :monsters}]
+  (add-tiles board (conj monsters player)))
 
-(def ^:private x-axis [:player :coords :x])
-(def ^:private y-axis [:player :coords :y])
-(def ^:private last-index (comp dec count))
-(def ^:private max-y last-index)
-(def ^:private max-x (comp last-index first))
+(defn- add-tiles
+  [board tiles]
+  (reduce (fn [brd
+               {{x :x y :y} :coords
+                tile        :tile}]
+            (assoc-in brd [y x] tile))
+          board
+          tiles))
 
 (defn- toward
   [x f]
   #(if (= x %)
      %
      (f %)))
+
+(def ^:private x-axis [:player :coords :x])
+(def ^:private y-axis [:player :coords :y])
+(def ^:private last-index (comp dec count))
+(def ^:private max-y last-index)
+(def ^:private max-x (comp last-index first))

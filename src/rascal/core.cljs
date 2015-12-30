@@ -4,8 +4,25 @@
 
 (enable-console-print!)
 
+(def jackal
+  {:tile   \j
+   :name   "Jackal"
+   :health 100})
+
+(def kobold
+  {:tile   \k
+   :name   "Kobold"
+   :health 100})
+
+(defn at
+  [tile [x y]]
+  (assoc-in tile [:coords] {:x x :y y}))
+
 (def state (r/atom {:board (->Board 15 15)
-                    :player {:coords {:x 7 :y 7}}}))
+                    :player {:tile   \@
+                             :coords {:x 7 :y 7}}
+                    :monsters [(-> jackal (at [13 10]))
+                               (-> kobold (at [ 1  1]))]}))
 
 (def keymap
   {72 b/move-left

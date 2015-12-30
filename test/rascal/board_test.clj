@@ -1,6 +1,8 @@
 (ns rascal.board-test
   (:use [clojure.test])
-  (:require [rascal.board :as board :refer [. c ->Board]]))
+  (:require [rascal.board :as board :refer [->Board]]))
+
+(declare rendered)
 
 (deftest move-left
   (testing "normally"
@@ -49,8 +51,22 @@
                    [:player :coords :y])))))
 
 (deftest render
-  (is (= [[. . .]
-          [. . c]
-          [. . .]]
+  (is (= (rendered
+          ".r.
+           ..@
+           j..")
          (board/render {:board (->Board 3 3)
-                        :player {:coords {:x 2 :y 1}}}))))
+                        :player {:tile   \@
+                                 :coords {:x 2 :y 1}}
+                        :monsters [{:tile \j
+                                    :name "Jackal"
+                                    :coords {:x 0 :y 2}
+                                    :health 100}
+                                   {:tile \r
+                                    :name "Rat"
+                                    :coords {:x 1 :y 0}
+                                    :health 100}]}))))
+
+(defn- rendered
+  [b]
+  (map vec (clojure.string/split b #"\n +")))
