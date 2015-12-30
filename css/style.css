@@ -17,3 +17,10 @@ body {
     font-weight: bold;
     font-size: 2em;
 }
+.item1of3 {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    float: left;
+    width: 33.3%;
+}
