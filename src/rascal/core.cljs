@@ -54,7 +54,7 @@
     [:tbody (map-indexed game-row (b/render @state))]]
    [:ul
     (for [monster (:monsters @state)]
-      [:li.item1of3
+      [:li.item1of3 {:key (str monster)}
        [:h2 (:name monster)]
        [:p "Health: " (:health monster)]])]])
 
