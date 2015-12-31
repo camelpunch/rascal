@@ -1,7 +1,6 @@
-(ns rascal.board
-(:require [clojure.set :refer [intersection]]))
+(ns rascal.board)
 
-(declare add-tiles affect move
+(declare add-tiles affect alive? move
          max-x max-y toward x-axis y-axis)
 
 (defn make-board
@@ -26,13 +25,16 @@
     monsters :monsters}]
   (add-tiles board (conj monsters player)))
 
+(defn damager
+  [coords]
+  (fn [monster]
+    (if (= coords (:coords monster))
+      (affect monster [:health] - 50)
+      monster)))
+
 (defn do-battle
-  [{monsters :monsters :as s} enemy-coords]
-  (assoc s :monsters (map (fn [monster]
-                            (if (= enemy-coords (:coords monster))
-                              (affect monster [:health] - 50)
-                              monster))
-                          monsters)))
+  [{monsters :monsters :as s} f]
+  (assoc s :monsters (filter alive? (map f monsters))))
 
 (defn move-left
   [s]
@@ -52,15 +54,13 @@
 
 (defn- move
   [s axis movement]
-  (let [{player   :player
-         monsters :monsters
-         :as candidate-state} (update-in s axis movement)
-        player-coords         (set [(:coords player)])
-        monsters-coords       (set (map :coords monsters))
-        intersections         (intersection player-coords monsters-coords)]
-    (if (empty? intersections)
-      candidate-state
-      (do-battle s (first intersections)))))
+  (let [{{coords :coords} :player
+         monsters         :monsters
+         :as candidate-state }
+        (update-in s axis movement)]
+    (if-let [battle-coords (some #{coords} (map :coords monsters))]
+      (do-battle s (damager battle-coords))
+      candidate-state)))
 
 (defn- add-tiles
   [board tiles]
@@ -70,6 +70,10 @@
             (assoc-in brd [y x] tile))
           board
           tiles))
+
+(defn- alive?
+  [x]
+  (pos? (:health x)))
 
 (defn- affect
   [x ks f & args]

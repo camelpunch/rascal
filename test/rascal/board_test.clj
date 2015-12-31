@@ -101,7 +101,15 @@
               :monsters [(assoc beetle :health 50) jackal]}
              (board/move-down {:board    board
                                :player   player
-                               :monsters [beetle jackal]}))))))
+                               :monsters [beetle jackal]}))))
+
+    (testing "defeating a monster"
+      (is (= {:board    board
+              :player   player
+              :monsters [jackal]}
+             (board/move-down {:board    board
+                               :player   player
+                               :monsters [jackal (assoc beetle :health 50)]}))))))
 
 (defn- rendered
   [b]
