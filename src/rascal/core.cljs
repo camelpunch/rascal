@@ -1,28 +1,14 @@
 (ns rascal.core
   (:require [reagent.core :as r]
-            [rascal.board :as b :refer [->Board]]))
+            [rascal.board :as b :refer [make-board make-creature]]))
 
 (enable-console-print!)
 
-(def new-jackal
-  {:tile   \j
-   :name   "Jackal"
-   :health 100})
-
-(def new-kobold
-  {:tile   \k
-   :name   "Kobold"
-   :health 100})
-
-(defn at
-  [tile [x y]]
-  (assoc-in tile [:coords] {:x x :y y}))
-
-(def state (r/atom {:board (->Board 15 15)
+(def state (r/atom {:board (make-board 15 15)
                     :player {:tile   \@
                              :coords {:x 7 :y 7}}
-                    :monsters [(-> new-jackal (at [13 10]))
-                               (-> new-kobold (at [ 1  1]))]}))
+                    :monsters [(b/make-creature \j "Jackal" 13 10)
+                               (b/make-creature \r "Rat"     1  1)]}))
 
 (def keymap
   {72 b/move-left
