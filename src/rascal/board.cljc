@@ -1,12 +1,16 @@
-(ns rascal.board)
+(ns rascal.board
+  (:require [rascal.render :refer [render]]))
 
-(declare add-tiles affect alive? move
+(declare affect alive? move
          max-x max-y toward x-axis y-axis)
 
 (defn make-board
   [width height]
-  (vec (repeat height
-               (vec (repeat width \.)))))
+  (for [y (range height)]
+       (for [x (range width)]
+         {:tile \.
+          :name "Empty space"
+          :coords [:x x :y y]})))
 
 (defn make-creature
   [tile s x y]
@@ -18,12 +22,6 @@
 (defn make-player
   [x y]
   (make-creature \@ "Player" x y))
-
-(defn render
-  [{board    :board
-    player   :player
-    monsters :monsters}]
-  (add-tiles board (conj monsters player)))
 
 (defn damager
   [coords]
@@ -38,7 +36,7 @@
 
 (defn move-left
   [s]
-  (move s x-axis (toward 0 dec))) ; TODO: make walls as tiles, remove need for 0 checking
+  (move s x-axis (toward 0 dec)))
 
 (defn move-right
   [{board :board :as s}]
@@ -61,15 +59,6 @@
     (if-let [battle-coords (some #{coords} (map :coords monsters))]
       (do-battle s (damager battle-coords))
       candidate-state)))
-
-(defn- add-tiles
-  [board tiles]
-  (reduce (fn [brd
-               {{x :x y :y} :coords
-                tile        :tile}]
-            (assoc-in brd [y x] tile))
-          board
-          tiles))
 
 (defn- alive?
   [x]

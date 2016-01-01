@@ -4,8 +4,6 @@
                                             make-player
                                             make-creature]]))
 
-(declare rendered)
-
 (deftest move-left
   (testing "normally"
     (is (= 4
@@ -51,16 +49,6 @@
            (get-in (board/move-down {:board (make-board 5 10)
                                      :player (make-player 0 9)})
                    [:player :coords :y])))))
-
-(deftest render
-  (is (= (rendered
-          ".r.
-           ..@
-           j..")
-         (board/render {:board    (make-board  3 3)
-                        :player   (make-player 2 1)
-                        :monsters [(make-creature \j "Jackal" 0 2)
-                                   (make-creature \r "Rat"    1 0)]}))))
 
 (deftest collision
   (let [board  (make-board                  10 10)
@@ -111,6 +99,3 @@
                                :player   player
                                :monsters [jackal (assoc beetle :health 50)]}))))))
 
-(defn- rendered
-  [b]
-  (map vec (clojure.string/split b #"\n +")))

@@ -1,6 +1,7 @@
 (ns rascal.core
   (:require [reagent.core :as r]
-            [rascal.board :as b :refer [make-board make-creature]]))
+            [rascal.board :as b :refer [make-board make-creature]]
+            [rascal.render :refer [render]]))
 
 (enable-console-print!)
 
@@ -37,7 +38,7 @@
     :on-key-down keydown-handler}
    [:h1 "Rascal"]
    [:table.marginC
-    [:tbody (map-indexed game-row (b/render @state))]]
+    [:tbody (map-indexed game-row (render @state))]]
    [:ul
     (for [monster (:monsters @state)]
       [:li.item1of3 {:key (str monster)}
