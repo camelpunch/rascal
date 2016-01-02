@@ -29,7 +29,7 @@
   [x ks f & args]
   (update-in x ks #(apply f % args)))
 
-(defn damager
+(defn- damager
   [coords]
   (fn [monster]
     (if (= coords (:coords monster))
