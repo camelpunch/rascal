@@ -1,20 +1,6 @@
 (ns rascal.tiles)
 
-(defn make-wall-tile
-  [x y]
-  {:tile \#
-   :name "Wall"
-   :coords {:x x :y y}})
-
-(defn horz-wall
-  [width y]
-  [(map #(make-wall-tile % y) (range width))])
-
-(defn make-empty-space
-  [x y]
-  {:tile \.
-   :name "Empty space"
-   :coords {:x x :y y}})
+(declare horz-wall make-empty-space make-wall-tile)
 
 (defn make-board
   [width height]
@@ -43,3 +29,19 @@
 (def alive? (comp pos? :health))
 (def x-axis [:player :coords :x])
 (def y-axis [:player :coords :y])
+
+(defn- make-empty-space
+  [x y]
+  {:tile \.
+   :name "Empty space"
+   :coords {:x x :y y}})
+
+(defn- make-wall-tile
+  [x y]
+  {:tile \#
+   :name "Wall"
+   :coords {:x x :y y}})
+
+(defn- horz-wall
+  [width y]
+  [(map #(make-wall-tile % y) (range width))])
