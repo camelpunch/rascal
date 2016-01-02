@@ -20,4 +20,3 @@
     player   :player
     monsters :monsters}]
   (add-tiles (render-board board) (conj monsters player)))
-

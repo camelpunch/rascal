@@ -1,8 +1,10 @@
 (ns rascal.board-test
   (:use [clojure.test])
-  (:require [rascal.board :as board :refer [make-board
+  (:require [rascal.test-helpers :refer [rendered]]
+            [rascal.board :as board :refer [make-board
                                             make-player
-                                            make-creature]]))
+                                            make-creature]]
+            [rascal.render :refer [render]]))
 
 (deftest move-left
   (testing "normally"
@@ -10,44 +12,45 @@
            (get-in (board/move-left {:player (make-player 5 0)})
                    [:player :coords :x]))))
   (testing "from leftmost position"
-    (is (= 0
-           (get-in (board/move-left {:player (make-player 0 0)})
+    (is (= 1
+           (get-in (board/move-left {:player (make-player 1 1)
+                                     :board  (make-board  3 3)})
                    [:player :coords :x])))))
 
 (deftest move-right
   (testing "normally"
     (is (= 2
-           (get-in (board/move-right {:board (make-board 3 3)
-                                      :player (make-player 1 0)})
+           (get-in (board/move-right {:board (make-board 4 4)
+                                      :player (make-player 1 1)})
                    [:player :coords :x]))))
   (testing "from rightmost position"
-    (is (= 3
+    (is (= 2
            (get-in (board/move-right {:board (make-board 4 4)
-                                      :player (make-player 3 0)})
+                                      :player (make-player 2 1)})
                    [:player :coords :x])))))
 
 (deftest move-up
   (testing "normally"
     (is (= 2
            (get-in (board/move-up {:board (make-board 10 10)
-                                   :player (make-player 0 3)})
+                                   :player (make-player 1 3)})
                    [:player :coords :y]))))
   (testing "from top"
-    (is (= 0
+    (is (= 1
            (get-in (board/move-up {:board (make-board 5 10)
-                                   :player (make-player 0 0)})
+                                   :player (make-player 1 1)})
                    [:player :coords :y])))))
 
 (deftest move-down
   (testing "normally"
     (is (= 2
            (get-in (board/move-down {:board (make-board 10 10)
-                                     :player (make-player 0 1)})
+                                     :player (make-player 1 1)})
                    [:player :coords :y]))))
   (testing "from bottom"
-    (is (= 9
+    (is (= 8
            (get-in (board/move-down {:board (make-board 5 10)
-                                     :player (make-player 0 9)})
+                                     :player (make-player 1 8)})
                    [:player :coords :y])))))
 
 (deftest collision
