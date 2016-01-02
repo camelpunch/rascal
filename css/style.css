@@ -3,8 +3,10 @@ html {
     color: #fff;
     margin-top: 10px;
 }
-.page {
+* {
     font-family: "Courier New";
+}
+.page {
     margin: 0 10%;
 }
 a {
@@ -15,9 +17,6 @@ a {
 }
 .textC {
     text-align: center;
-}
-.marginC {
-    margin: 0 auto;
 }
 .mainHeading {
     font-weight: bold;
@@ -32,6 +31,6 @@ a {
     font-size: 123.1%;
     background: #222;
 }
-.monster-name {
+.bld {
     font-weight: bold;
 }
