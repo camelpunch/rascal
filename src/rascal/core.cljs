@@ -1,6 +1,7 @@
 (ns rascal.core
   (:require [reagent.core :as r]
-            [rascal.board :as b :refer [make-board make-creature]]
+            [rascal.game :as g]
+            [rascal.tiles :refer [make-board make-creature]]
             [rascal.render :refer [render]]))
 
 (enable-console-print!)
@@ -8,14 +9,14 @@
 (def state (r/atom {:board (make-board 15 15)
                     :player {:tile   \@
                              :coords {:x 7 :y 7}}
-                    :monsters [(b/make-creature \j "Jackal" 13 10)
-                               (b/make-creature \r "Rat"     1  1)]}))
+                    :monsters [(make-creature \j "Jackal" 13 10)
+                               (make-creature \r "Rat"     1  1)]}))
 
 (def keymap
-  {72 b/move-left
-   76 b/move-right
-   75 b/move-up
-   74 b/move-down})
+  {72 g/move-left
+   76 g/move-right
+   75 g/move-up
+   74 g/move-down})
 
 (defn keydown-handler
   [e]
