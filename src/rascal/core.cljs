@@ -49,7 +49,7 @@
      [:ul.monsters
      (for [monster (:monsters @state)]
        [:li.monster {:key (str monster)}
-        [:h2.bld (:name monster)]
+        [:h2.bld "(" (:tile monster) ") " (:name monster)]
         [:p.monster-detail.break "Health: " (:health monster)]])]]
     [:div.board.yui3-u-3-4
      [:table.textC.break
