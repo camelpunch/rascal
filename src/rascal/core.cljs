@@ -38,6 +38,7 @@
    {:tab-index 0
     :on-key-down keydown-handler}
    [:h1 "Rascal"]
+   [:p [:a {:href "https://github.com/camelpunch/rascal"} "Source"]]
    [:table.marginC
     [:tbody (map-indexed game-row (render @state))]]
    [:ul
