@@ -1,7 +1,11 @@
-body {
-    font-family: fixed-width;
+html {
     background: #000;
     color: #fff;
+    margin-top: 10px;
+}
+.page {
+    font-family: "Courier New";
+    margin: 0 10%;
 }
 a {
     color: #fff;
@@ -15,15 +19,19 @@ a {
 .marginC {
     margin: 0 auto;
 }
+.mainHeading {
+    font-weight: bold;
+    font-size: 197%;
+}
+.break {
+    margin-bottom: 2em;
+}
 .cell {
     width: 1.2em;
     font-weight: bold;
-    font-size: 2em;
+    font-size: 123.1%;
+    background: #222;
 }
-.item1of3 {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    float: left;
-    width: 33.3%;
+.monster-name {
+    font-weight: bold;
 }

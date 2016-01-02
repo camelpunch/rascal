@@ -6,7 +6,7 @@
 
 (enable-console-print!)
 
-(def state (r/atom {:board    (t/make-board                 15 15)
+(def state (r/atom {:board    (t/make-board                 30 25)
                     :player   (t/make-player                 7  7)
                     :monsters [(t/make-creature \j "Jackal" 13 10)
                                (t/make-creature \r "Rat"     1  1)]}))
@@ -33,18 +33,22 @@
 
 (defn main
   []
-  [:div#game.invisibleFocus.textC
+  [:div#game.page.invisibleFocus
    {:tab-index 0
     :on-key-down keydown-handler}
-   [:h1 "Rascal"]
-   [:p [:a {:href "https://github.com/camelpunch/rascal"} "Source"]]
-   [:table.marginC
-    [:tbody (map-indexed game-row (render @state))]]
-   [:ul
-    (for [monster (:monsters @state)]
-      [:li.item1of3 {:key (str monster)}
-       [:h2 (:name monster)]
-       [:p "Health: " (:health monster)]])]])
+   [:div.textC.header.break
+    [:h1.mainHeading "Rascal"]
+    [:p [:a {:href "https://github.com/camelpunch/rascal"} "Source"]]]
+   [:div.yu3-g
+    [:div.yui3-u-1-4
+     [:ul.monsters
+     (for [monster (:monsters @state)]
+       [:li.monster {:key (str monster)}
+        [:h2.monster-name (:name monster)]
+        [:p.monster-detail.break "Health: " (:health monster)]])]]
+    [:div.board.yui3-u-3-4
+     [:table.textC.marginC
+      [:tbody (map-indexed game-row (render @state))]]]]])
 
 (def main-focused
   (-> main (with-meta {:component-did-mount

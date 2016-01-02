@@ -5,7 +5,9 @@
   []
   (html5
    [:head
-    (include-css "https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css"
+    (include-css "http://yui.yahooapis.com/3.18.1/build/cssreset/cssreset-min.css"
+                 "http://yui.yahooapis.com/3.18.1/build/cssfonts/cssfonts-min.css"
+                 "http://yui.yahooapis.com/3.18.1/build/cssgrids/cssgrids-min.css"
                  "style.css")]
    [:body
     [:div#app]
