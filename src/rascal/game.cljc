@@ -2,16 +2,12 @@
   (:require [rascal.tiles :as t]
             [rascal.render :refer [render]]))
 
-(declare affect damager move)
+(declare affect damager do-battle move)
 
-(defn do-battle
-  [{monsters :monsters :as s} f]
-  (assoc s :monsters (filter t/alive? (map f monsters))))
-
-(defn move-left [s] (move s t/x-axis dec))
+(defn move-left  [s] (move s t/x-axis dec))
 (defn move-right [s] (move s t/x-axis inc))
-(defn move-up [s] (move s t/y-axis dec))
-(defn move-down [s] (move s t/y-axis inc))
+(defn move-up    [s] (move s t/y-axis dec))
+(defn move-down  [s] (move s t/y-axis inc))
 
 (defn- move
   [s axis movement]
@@ -24,6 +20,10 @@
     (if-let [battle-coords (some #{coords} (map :coords obstacles))]
       (do-battle s (damager battle-coords))
       candidate-state)))
+
+(defn- do-battle
+  [{monsters :monsters :as s} f]
+  (assoc s :monsters (filter t/alive? (map f monsters))))
 
 (defn- affect
   [x ks f & args]
