@@ -20,9 +20,3 @@
     player   :player
     monsters :monsters}]
   (add-tiles (render-board board) (conj monsters player)))
-
-(comment
-  (render {:board (rascal.board/make-board 4 4)
-           :player (rascal.board/make-player 1 1)
-           :monsters []})
-)
