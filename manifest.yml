@@ -1,0 +1,8 @@
+---
+applications:
+- name: rascal
+  host: rascal
+  domain: andrewbruce.net
+  buildpack: staticfile_buildpack
+  memory: 64M
+  path: target

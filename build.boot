@@ -13,16 +13,35 @@
 (require '[adzerk.boot-cljs :refer :all]
          '[adzerk.boot-reload :refer [reload]]
          '[pandeiro.boot-http :refer [serve]]
-         '[adzerk.boot-test :refer :all])
+         '[adzerk.boot-test :refer :all]
+         '[rascal.pages :as pages]
+         '[clojure.java.io :as io])
 
 (deftask testing
   []
   (set-env! :source-paths #(conj % "test"))
   identity)
 
+(deftask index-html
+  []
+  (let [tmp (tmp-dir!)]
+    (fn middleware [next-handler]
+      (fn handler [fileset]
+        (empty-dir! tmp)
+        (-> (io/file tmp "index.html")
+            (spit (pages/index)))
+        (-> fileset
+            (add-resource tmp)
+            commit!
+            next-handler)))))
+
 (deftask build
   []
   (comp (cljs :source-map true) (target)))
+
+(deftask prod
+  []
+  (comp (cljs :optimizations :advanced) (index-html) (target)))
 
 (deftask run
   []
