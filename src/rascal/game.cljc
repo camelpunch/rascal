@@ -25,13 +25,9 @@
   [{monsters :monsters :as s} f]
   (assoc s :monsters (filter t/alive? (map f monsters))))
 
-(defn- affect
-  [x ks f & args]
-  (update-in x ks #(apply f % args)))
-
 (defn- damager
   [coords]
   (fn [monster]
     (if (= coords (:coords monster))
-      (affect monster [:health] - 50)
+      (update-in monster [:health] - 50)
       monster)))
