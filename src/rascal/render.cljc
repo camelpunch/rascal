@@ -16,7 +16,7 @@
           tiles))
 
 (defn render
-  [{board    :board
-    player   :player
-    monsters :monsters}]
-  (add-tiles (render-board board) (conj monsters player)))
+  [{board     :board
+    player    :player
+    obstacles :obstacles}]
+  (add-tiles (render-board board) (conj obstacles player)))

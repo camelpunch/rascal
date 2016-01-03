@@ -63,43 +63,43 @@
         jackal (make-creature \j "Jackal"    5  4)]
 
     (testing "going left"
-      (is (= {:board    board
-              :player   player
-              :monsters [(assoc rat :health 50) jackal]}
-             (game/move-left {:board    board
-                              :player   player
-                              :monsters [rat jackal]}))
+      (is (= {:board     board
+              :player    player
+              :obstacles [(assoc rat :health 50) jackal]}
+             (game/move-left {:board     board
+                              :player    player
+                              :obstacles [rat jackal]}))
           "Player doesn't move, monster loses health."))
 
     (testing "going right"
-      (is (= {:board    board
-              :player   player
-              :monsters [rat (assoc jackal :health 50)]}
-             (game/move-right {:board    board
-                               :player   player
-                               :monsters [rat jackal]}))))
+      (is (= {:board     board
+              :player    player
+              :obstacles [rat (assoc jackal :health 50)]}
+             (game/move-right {:board     board
+                               :player    player
+                               :obstacles [rat jackal]}))))
 
     (testing "going up"
-      (is (= {:board    board
-              :player   player
-              :monsters [(assoc ant :health 50) jackal]}
-             (game/move-up {:board    board
-                            :player   player
-                            :monsters [ant jackal]}))))
+      (is (= {:board     board
+              :player    player
+              :obstacles [(assoc ant :health 50) jackal]}
+             (game/move-up {:board     board
+                            :player    player
+                            :obstacles [ant jackal]}))))
 
     (testing "going down"
-      (is (= {:board    board
-              :player   player
-              :monsters [(assoc beetle :health 50) jackal]}
+      (is (= {:board     board
+              :player    player
+              :obstacles [(assoc beetle :health 50) jackal]}
              (game/move-down {:board    board
                               :player   player
-                              :monsters [beetle jackal]}))))
+                              :obstacles [beetle jackal]}))))
 
     (testing "defeating a monster"
-      (is (= {:board    board
-              :player   player
-              :monsters [jackal]}
-             (game/move-down {:board    board
-                              :player   player
-                              :monsters [jackal (assoc beetle :health 50)]}))))))
+      (is (= {:board     board
+              :player    player
+              :obstacles [jackal]}
+             (game/move-down {:board     board
+                              :player    player
+                              :obstacles [jackal (assoc beetle :health 50)]}))))))
 

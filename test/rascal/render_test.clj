@@ -11,7 +11,7 @@
            #..@#
            #j..#
            #####")
-         (render {:board    (t/make-board  5 5)
-                  :player   (t/make-player 3 2)
-                  :monsters [(t/make-creature \j "Jackal" 1 3)
-                             (t/make-creature \r "Rat"    2 1)]}))))
+         (render {:board     (t/make-board  5 5)
+                  :player    (t/make-player 3 2)
+                  :obstacles [(t/make-creature \j "Jackal" 1 3)
+                              (t/make-creature \r "Rat"    2 1)]}))))

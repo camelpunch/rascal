@@ -6,9 +6,9 @@
 
 (enable-console-print!)
 
-(def state (r/atom {:board    (t/make-board                 30 25)
-                    :player   (t/make-player                15 23)
-                    :monsters [(t/make-creature \j "Jackal" 13 10)
+(def state (r/atom {:board     (t/make-board                 30 25)
+                    :player    (t/make-player                15 23)
+                    :obstacles [(t/make-creature \j "Jackal" 13 10)
                                (t/make-creature \r "Rat"     1  1)]}))
 
 (def keymap
@@ -46,11 +46,11 @@
     [:div.yui3-u-1-3]]
    [:div.yu3-g
     [:div.yui3-u-1-4
-     [:ul.monsters
-     (for [monster (:monsters @state)]
-       [:li.monster {:key (str monster)}
-        [:h2.bld "(" (:tile monster) ") " (:name monster)]
-        [:p.monster-detail.break "Health: " (:health monster)]])]]
+     [:ul
+     (for [obstacle (:obstacles @state)]
+       [:li {:key (str obstacle)}
+        [:h2.bld "(" (:tile obstacle) ") " (:name obstacle)]
+        [:p.break "Health: " (:health obstacle)]])]]
     [:div.board.yui3-u-3-4
      [:table.textC.break
       [:tbody (map-indexed game-row (render @state))]]

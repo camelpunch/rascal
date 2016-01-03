@@ -12,18 +12,18 @@
 (defn- move
   [s axis movement]
   (let [{{coords :coords} :player
-         monsters         :monsters
+         obstacles        :obstacles
          board            :board
          :as candidate-state} (update-in s axis movement)
         walls             (filter t/wall? (flatten board))
-        obstacles         (concat monsters walls)]
-    (if-let [battle-coords (some #{coords} (map :coords obstacles))]
+        all-obstacles     (concat obstacles walls)]
+    (if-let [battle-coords (some #{coords} (map :coords all-obstacles))]
       (do-battle s (damager battle-coords))
       candidate-state)))
 
 (defn- do-battle
-  [{monsters :monsters :as s} f]
-  (assoc s :monsters (filter t/alive? (map f monsters))))
+  [{obstacles :obstacles :as s} f]
+  (assoc s :obstacles (filter t/alive? (map f obstacles))))
 
 (defn- damager
   [coords]
