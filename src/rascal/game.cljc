@@ -19,7 +19,7 @@
 
 (defn- damager
   [coords]
-  (fn [monster]
-    (if (and (contains? monster :health) (= coords (:coords monster)))
-      (update-in monster [:health] - 50)
-      monster)))
+  (fn [x]
+    (if (= coords (:coords x))
+      (t/damage x)
+      x)))
