@@ -48,7 +48,8 @@
    [:div.yu3-g
     [:div.yui3-u-1-4
      [:ul
-     (for [obstacle (:obstacles @state)]
+     (for [obstacle (:obstacles @state)
+           :when (contains? obstacle :health)]
        [:li {:key (str obstacle)}
         [:h2.bld "(" (:tile obstacle) ") " (:name obstacle)]
         [:p.break "Health: " (:health obstacle)]])]]
