@@ -7,10 +7,8 @@
 (defrecord Creature
     [tile name health coords]
   Obstacle
-  (alive? [x]
-    (-> x :health pos?))
-  (damage [x]
-    (update-in x [:health] - 50)))
+  (alive? [x] (-> x :health pos?))
+  (damage [x] (update-in x [:health] - 50)))
 
 (defn make-creature
   [tile creature-name x y]
@@ -62,9 +60,8 @@
 (defn make-board
   [width height]
   (for [y (range height)]
-    (concat
-     (for [x (range width)]
-       (make-empty-space x y)))))
+    (for [x (range width)]
+      (make-empty-space x y))))
 
 (defn make-player
   [x y]
