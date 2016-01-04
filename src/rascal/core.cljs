@@ -8,14 +8,15 @@
 
 (def state (r/atom {:board     (t/make-board                 30 25)
                     :player    (t/make-player                15 23)
-                    :obstacles [(t/make-creature \j "Jackal" 13 10)
-                               (t/make-creature \r "Rat"     1  1)]}))
+                    :obstacles (conj (t/make-walls-for-board 30 25)
+                                     (t/make-creature \j "Jackal" 13 10)
+                                     (t/make-creature \r "Rat"     1  1))}))
 
 (def keymap
-  {72 g/move-left
-   76 g/move-right
-   75 g/move-up
-   74 g/move-down})
+  {72 #(g/move % t/x-axis dec)
+   76 #(g/move % t/x-axis inc)
+   75 #(g/move % t/y-axis dec)
+   74 #(g/move % t/y-axis inc)})
 
 (defn keydown-handler
   [e]

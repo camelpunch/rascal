@@ -4,20 +4,13 @@
 
 (declare affect damager do-battle move)
 
-(defn move-left  [s] (move s t/x-axis dec))
-(defn move-right [s] (move s t/x-axis inc))
-(defn move-up    [s] (move s t/y-axis dec))
-(defn move-down  [s] (move s t/y-axis inc))
-
-(defn- move
+(defn move
   [s axis movement]
   (let [{{coords :coords} :player
          obstacles        :obstacles
          board            :board
-         :as candidate-state} (update-in s axis movement)
-        walls             (filter t/wall? (flatten board))
-        all-obstacles     (concat obstacles walls)]
-    (if-let [battle-coords (some #{coords} (map :coords all-obstacles))]
+         :as candidate-state} (update-in s axis movement)]
+    (if-let [battle-coords (some #{coords} (map :coords obstacles))]
       (do-battle s (damager battle-coords))
       candidate-state)))
 
@@ -28,6 +21,6 @@
 (defn- damager
   [coords]
   (fn [monster]
-    (if (= coords (:coords monster))
+    (if (and (contains? monster :health) (= coords (:coords monster)))
       (update-in monster [:health] - 50)
       monster)))
