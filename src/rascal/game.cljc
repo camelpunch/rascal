@@ -1,6 +1,5 @@
 (ns rascal.game
-  (:require [rascal.tiles :as t]
-            [rascal.render :refer [render]]))
+  (:require [rascal.tiles :as t]))
 
 (declare affect damager do-battle move)
 
