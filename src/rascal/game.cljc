@@ -15,7 +15,7 @@
 
 (defn- do-battle
   [{obstacles :obstacles :as s} f]
-  (assoc s :obstacles (filter t/alive? (map f obstacles))))
+  (assoc s :obstacles (remove t/dead? (map f obstacles))))
 
 (defn- damager
   [coords]

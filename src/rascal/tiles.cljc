@@ -1,13 +1,13 @@
 (ns rascal.tiles)
 
 (defprotocol Obstacle
-  (alive? [x])
+  (dead?  [x])
   (damage [x]))
 
 (defrecord Creature
     [tile name health coords]
   Obstacle
-  (alive? [x] (-> x :health pos?))
+  (dead?  [x] ((complement pos?) (:health x)))
   (damage [x] (update-in x [:health] - 50)))
 
 (defn make-creature
@@ -21,7 +21,7 @@
 (defrecord Wall
     [tile name coords]
   Obstacle
-  (alive? [_] true)
+  (dead?  [_] false)
   (damage [x] x))
 
 (defn make-wall-tile
