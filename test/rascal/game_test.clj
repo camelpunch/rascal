@@ -25,7 +25,7 @@
                    [:player :coords :x])))))
 
 (deftest collision
-  (let [board  (make-board                  10 10)
+  (let [board  (make-board                   6  6)
         ant    (make-creature \a "Ant"       4  3)
         player (make-player                  4  4)
         beetle (make-creature \b "Beetle"    4  5)
@@ -35,19 +35,24 @@
     (testing "into a monster"
       (is (= {:board     board
               :player    player
-              :obstacles [(assoc rat :health 50) jackal]}
+              :obstacles [(assoc rat :health 50) jackal]
+              :log       ["first log"
+                          "You hit the Rat"]}
              (-> {:board     board
                   :player    player
-                  :obstacles [rat jackal]}
+                  :obstacles [rat jackal]
+                  :log       ["first log"]}
                  (game/move x-axis dec)))
           "Player doesn't move, monster loses health."))
 
     (testing "defeating a monster"
       (is (= {:board     board
               :player    player
-              :obstacles [jackal]}
+              :obstacles [jackal]
+              :log       ["foo" "You hit the Beetle"]}
              (-> {:board     board
                   :player    player
-                  :obstacles [jackal (assoc beetle :health 50)]}
+                  :obstacles [jackal (assoc beetle :health 50)]
+                  :log       ["foo"]}
                  (game/move y-axis inc)))))))
 

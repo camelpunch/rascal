@@ -1,25 +1,38 @@
 (ns rascal.game
   (:require [rascal.tiles :as t]))
 
-(declare affect damager do-battle move)
+(defn- same-coords?
+  [x y]
+  (= (:coords x) (:coords y)))
+
+(defn- hit-anything?
+  [x ys]
+  (some #{(:coords x)} (map :coords ys)))
+
+(defn- do-battle
+  [old-state player new-obstacles]
+  (reduce (fn [{log           :log
+                acc-obstacles :obstacles
+                :as acc}
+               old-obstacle]
+            (let [hit?         (same-coords? player old-obstacle)
+                  new-obstacle (if hit? (t/damage old-obstacle) old-obstacle)]
+              (assoc acc
+                     :obstacles (if (t/dead? new-obstacle)
+                                  acc-obstacles
+                                  (conj acc-obstacles new-obstacle))
+                     :log       (cond
+                                  hit?  (conj log (str "You hit the " (:name new-obstacle)))
+                                  :else log))))
+          (assoc old-state :obstacles [])
+          new-obstacles))
 
 (defn move
   [old-state axis movement]
-  (let [{{coords :coords} :player
-         obstacles        :obstacles
-         board            :board
+  (let [{player      :player
+         c-obstacles :obstacles
          :as candidate-state} (update-in old-state axis movement)]
-    (if-let [battle-coords (some #{coords} (map :coords obstacles))]
-      (do-battle old-state (damager battle-coords))
+    (if (hit-anything? player c-obstacles)
+      (do-battle old-state player c-obstacles)
       candidate-state)))
 
-(defn- do-battle
-  [{obstacles :obstacles :as s} f]
-  (assoc s :obstacles (remove t/dead? (map f obstacles))))
-
-(defn- damager
-  [coords]
-  (fn [x]
-    (if (= coords (:coords x))
-      (t/damage x)
-      x)))

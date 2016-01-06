@@ -65,7 +65,7 @@
      [:h2.bld "Keys:"]
      [:p "h,j,k,l - movement"]
      [:h2.bld "Activity:"]
-     [:ol (map-indexed log-line (:log @state))]]]])
+     [:ol (map-indexed log-line (reverse (:log @state)))]]]])
 
 (def main-focused
   (-> main (with-meta {:component-did-mount
