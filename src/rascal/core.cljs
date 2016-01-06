@@ -6,12 +6,11 @@
 
 (enable-console-print!)
 
-(def state (r/atom {:board     (t/make-board                 30 25)
-                    :player    (t/make-player                15 23)
-                    :obstacles (conj (t/make-walls-for-board 30 25)
-                                     (t/make-creature \j "Jackal" 13 10)
-                                     (t/make-creature \r "Rat"     1  1))
-                    :log       ["Player enters the dungeon"]}))
+(def state (r/atom (g/make-game
+                    :board    [30 25]
+                    :player   [15 23]
+                    :monsters [(t/make-creature \j "Jackal" 13 10)
+                               (t/make-creature \r "Rat"     1  1)])))
 
 (def keymap
   {72 #(g/move % t/x-axis dec)
@@ -51,7 +50,8 @@
    [:div.break.yui3-g
     [:div.yui3-u-1-3
      [:h2.bld "Player"]
-     [:p "Health: " (get-in @state [:player :health])]]
+     [:p "Health: " (get-in @state [:player :health])]
+     [:p "Turn: " (:turn @state)]]
     [:div.yui3-u-1-3.textC
      [:h1.mainHeading "Rascal"]
      [:p [:a {:href "https://github.com/camelpunch/rascal"} "Source"]]]
