@@ -4,13 +4,13 @@
 (declare affect damager do-battle move)
 
 (defn move
-  [s axis movement]
+  [old-state axis movement]
   (let [{{coords :coords} :player
          obstacles        :obstacles
          board            :board
-         :as candidate-state} (update-in s axis movement)]
+         :as candidate-state} (update-in old-state axis movement)]
     (if-let [battle-coords (some #{coords} (map :coords obstacles))]
-      (do-battle s (damager battle-coords))
+      (do-battle old-state (damager battle-coords))
       candidate-state)))
 
 (defn- do-battle
