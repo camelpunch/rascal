@@ -10,7 +10,7 @@
    :board     (apply t/make-board board-coords)
    :obstacles (concat (apply t/make-walls-for-board board-coords)
                       monsters)
-   :log       ["Player entered the dungeon"]})
+   :log       ["You entered the dungeon"]})
 
 (defn- same?
   [f x y]

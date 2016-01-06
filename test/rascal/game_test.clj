@@ -12,7 +12,7 @@
             [rascal.render :refer [render]]))
 
 (deftest move
-  (testing "normally"
+  (testing "normal movement moves player"
     (is (= 4
            (get-in (-> (game/make-game :player [5 1]
                                        :board  [6 6])
@@ -37,7 +37,7 @@
               :player    player
               :obstacles (concat (make-walls-for-board 6 6)
                                  [(assoc jackal :health 50) beetle])
-              :log       ["Player entered the dungeon"
+              :log       ["You entered the dungeon"
                           "You hit the Jackal"]}
              (-> (game/make-game :board    [6 6]
                                  :player   [4 3]
@@ -51,7 +51,8 @@
               :player    player
               :obstacles (concat (make-walls-for-board 6 6)
                                  [jackal])
-              :log       ["Player entered the dungeon" "You defeated the Beetle"]}
+              :log       ["You entered the dungeon"
+                          "You defeated the Beetle"]}
              (-> (game/make-game :board    [6 6]
                                  :player   [4 3]
                                  :monsters [jackal (assoc beetle :health 50)])
