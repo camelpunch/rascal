@@ -12,10 +12,6 @@
                       monsters)
    :log       ["You entered the dungeon"]})
 
-(defn- same?
-  [f x y]
-  (= (f x) (f y)))
-
 (defn- log
   [xs & ys]
   (conj xs (apply str ys)))
@@ -35,15 +31,15 @@
                 acc-obstacles :obstacles
                 :as acc}
                old-obstacle]
-            (let [hit?          (same? :coords player old-obstacle)
-                  new-obstacle  (if hit? (t/damage old-obstacle) old-obstacle)]
+            (let [in-battle?          (= (:coords player) (:coords old-obstacle))
+                  new-obstacle  (if in-battle? (t/damage old-obstacle) old-obstacle)]
               (assoc acc
                      :obstacles (conj-obstacles acc-obstacles new-obstacle)
                      :log       (cond
                                   (t/dead? new-obstacle)
                                   (log acc-log "You defeated the " (:name new-obstacle))
 
-                                  hit?
+                                  in-battle?
                                   (log acc-log "You hit the "      (:name new-obstacle))
 
                                   :else
