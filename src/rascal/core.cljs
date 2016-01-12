@@ -69,7 +69,7 @@
      [:table.textC.break
       [:tbody (map-indexed game-row (render @state))]]
      [:h2.bld "Keys:"]
-     [:p "h,j,k,l - movement"]
+     [:p "h,j,k,l,y,u,n,m - movement"]
      [:h2.bld "Activity:"]
      [:ol (map-indexed log-line (reverse (:log @state)))]]]])
 
