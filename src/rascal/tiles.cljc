@@ -18,6 +18,21 @@
     :health 100
     :coords {:x x :y y}}))
 
+(defn- axis-pos
+  [length roll]
+  (-> length (- 2) (* (/ roll 10)) inc int))
+
+(defn place-creatures
+  [& {[width height] :board-dimensions
+      dice-rolls     :dice-rolls
+      creature-pairs :creatures}]
+  (map (fn [[tile name] [x-mult y-mult]]
+         (let [x (axis-pos width x-mult)
+               y (axis-pos height y-mult)]
+           (make-creature tile name x y)))
+       creature-pairs
+       (take (count creature-pairs) (partition 2 dice-rolls))))
+
 (defrecord Wall
     [tile name coords]
   Obstacle

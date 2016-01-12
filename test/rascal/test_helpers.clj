@@ -1,11 +1,12 @@
 (ns rascal.test-helpers
   (:require [rascal.tiles :as tiles]
+            [rascal.game :as game]
             [rascal.render :refer [render]]))
 
 (def g
-  {:board (tiles/make-board 10 10)
-   :player (tiles/make-player 1 1)
-   :monsters [(tiles/make-creature \j "Jackal" 1 2)]})
+  (game/make-game :player   [ 1  1]
+                  :board    [ 6  6]
+                  :monsters [(tiles/make-creature \j "Jackal" 3 3)]))
 
 (defn rendered
   [b]

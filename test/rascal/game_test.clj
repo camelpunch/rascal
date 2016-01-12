@@ -11,6 +11,20 @@
                                   make-walls-for-board]]
             [rascal.render :refer [render]]))
 
+(deftest creating-a-game
+  (let [game-start (game/make-game :board      [ 8 10]
+                                   :player     [ 5  2]
+                                   :monsters   [[\j "Jackal"] [\b "Beetle"]]
+                                   :dice-rolls [ 5  2
+                                                10  3
+                                                 0 10])]
+    (testing "starts on turn 1"
+      (is (= 1 (:turn game-start))))
+
+    (testing "shifts the dice rolls"
+      (is (= [0 10]
+             (:dice-rolls game-start))))))
+
 (deftest move
   (testing "normal movement moves player"
     (is (= 4
@@ -26,35 +40,26 @@
                    [:player :coords :x])))))
 
 (deftest collision
-  (let [board  (make-board                   6  6)
-        player (make-player                  4  3)
-        beetle (make-creature \b "Beetle"    4  4)
-        jackal (make-creature \j "Jackal"    3  3)]
+  (let [game-start (game/make-game :board      [ 8 10]
+                                   :player     [ 5  2]
+                                   :monsters   [[\j "Jackal"] [\b "Beetle"]]
+                                   :dice-rolls [ 5  2
+                                                10  3])
+        go-left #(game/move % x-axis dec)]
 
-    (testing "into a monster"
-      (is (= {:turn      2
-              :board     board
-              :player    player
-              :obstacles (concat (make-walls-for-board 6 6)
-                                 [(assoc jackal :health 50) beetle])
-              :log       ["You entered the dungeon"
-                          "You hit the Jackal"]}
-             (-> (game/make-game :board    [6 6]
-                                 :player   [4 3]
-                                 :monsters [jackal beetle])
-                 (game/move x-axis dec)))
-          "Player doesn't move, monster loses health."))
+    (testing "logs the fight"
+      (is (= ["You entered the dungeon"
+              "You hit the Jackal"
+              "You defeated the Jackal"]
+             (-> game-start
+                 go-left
+                 go-left
+                 :log))))
 
-    (testing "defeating a monster"
-      (is (= {:turn      2
-              :board     board
-              :player    player
-              :obstacles (concat (make-walls-for-board 6 6)
-                                 [jackal])
-              :log       ["You entered the dungeon"
-                          "You defeated the Beetle"]}
-             (-> (game/make-game :board    [6 6]
-                                 :player   [4 3]
-                                 :monsters [jackal (assoc beetle :health 50)])
-                 (game/move y-axis inc)))))))
+    (testing "player doesn't move"
+      (is (= {:x 5 :y 2}
+             (-> game-start
+                 go-left
+                 :player
+                 :coords))))))
 

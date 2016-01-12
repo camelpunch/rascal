@@ -1,16 +1,27 @@
 (ns rascal.game
   (:require [rascal.tiles :as t]))
 
+(defn- roll
+  [rolls n]
+  (let [[rolled future] (split-at n rolls)]
+    {:rolled rolled
+     :future future}))
+
 (defn make-game
-  [& {player-coords :player
-      board-coords  :board
-      monsters      :monsters}]
-  {:turn      1
-   :player    (apply t/make-player player-coords)
-   :board     (apply t/make-board board-coords)
-   :obstacles (concat (apply t/make-walls-for-board board-coords)
-                      monsters)
-   :log       ["You entered the dungeon"]})
+  [& {player-coords    :player
+      board-dimensions :board
+      monsters         :monsters
+      dice-rolls       :dice-rolls}]
+  (let [dice (roll dice-rolls (* 2 (count monsters)))]
+    {:turn       1
+     :player     (apply t/make-player player-coords)
+     :board      (apply t/make-board board-dimensions)
+     :obstacles  (concat (apply t/make-walls-for-board board-dimensions)
+                         (t/place-creatures :board-dimensions board-dimensions
+                                            :dice-rolls       (:rolled dice)
+                                            :creatures        monsters))
+     :dice-rolls (:future dice)
+     :log        ["You entered the dungeon"]}))
 
 (defn- log
   [xs & ys]
@@ -31,7 +42,7 @@
                 acc-obstacles :obstacles
                 :as acc}
                old-obstacle]
-            (let [in-battle?          (= (:coords player) (:coords old-obstacle))
+            (let [in-battle?    (= (:coords player) (:coords old-obstacle))
                   new-obstacle  (if in-battle? (t/damage old-obstacle) old-obstacle)]
               (assoc acc
                      :obstacles (conj-obstacles acc-obstacles new-obstacle)
