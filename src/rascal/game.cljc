@@ -63,11 +63,16 @@
   (some #{(:coords x)} (map :coords ys)))
 
 (defn move
-  [old-state axis movement]
+  [old-state f]
   (let [{player      :player
          c-obstacles :obstacles
-         :as candidate-state} (update-in old-state axis movement)]
+         :as candidate-state} (f old-state)]
     (-> (if (hit-anything? player c-obstacles)
           (do-battle old-state player c-obstacles)
           candidate-state)
         (update-in [:turn] inc))))
+
+(def left  #(update-in % t/x-axis dec))
+(def right #(update-in % t/x-axis inc))
+(def up    #(update-in % t/y-axis dec))
+(def down  #(update-in % t/y-axis inc))

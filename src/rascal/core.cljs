@@ -1,6 +1,6 @@
 (ns rascal.core
   (:require [reagent.core :as r]
-            [rascal.game :as g]
+            [rascal.game :as g :refer [move left right up down]]
             [rascal.tiles :as t]
             [rascal.render :refer [render]]))
 
@@ -15,10 +15,14 @@
                     :dice-rolls (repeatedly #(rand-int 10)))))
 
 (def keymap
-  {72 #(g/move % t/x-axis dec)
-   76 #(g/move % t/x-axis inc)
-   75 #(g/move % t/y-axis dec)
-   74 #(g/move % t/y-axis inc)})
+  {72 #(move % left)
+   76 #(move % right)
+   75 #(move % up)
+   74 #(move % down)
+   89 #(move % (comp left up))
+   85 #(move % (comp right up))
+   78 #(move % (comp left down))
+   77 #(move % (comp right down))})
 
 (defn keydown-handler
   [e]
