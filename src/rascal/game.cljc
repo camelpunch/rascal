@@ -67,10 +67,15 @@
                                          (log "You hit the " (:name new-obstacle))
                                          (log "The " (:name new-obstacle) " misses you"))
 
-                                     ; Missing just-player-hit. There's a simpler way!
+                                     player-hit?
+                                     (-> acc-log
+                                         (log "You miss the " (:name new-obstacle))
+                                         (log "The " (:name new-obstacle) " hits you"))
 
                                      :else
-                                     acc-log)))
+                                     (-> acc-log
+                                         (log "You miss the " (:name new-obstacle))
+                                         (log "The " (:name new-obstacle) " misses you")))))
               (update-in acc [:obstacles] conj old-obstacle)))
           (assoc old-state :obstacles [])
           new-obstacles))

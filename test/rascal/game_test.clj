@@ -53,22 +53,27 @@
                               :monsters   [[\j "Jackal"] [\b "Beetle"]]
                               :dice-rolls [ 5  2 ; Jackal at [3 2]
                                            10  3 ; Beetle at [6 3]
-                                               5 ; Player lands hit (>= 5)
-                                               6 ; Jackal lands hit on player
+                                               4 ; Player misses (< 5)
+                                               3 ; Jackal misses
                                                7 ; Player lands another hit
-                                               0 ; Jackal misses
-                                               5 ; Player lands final blow
+                                               6 ; Jackal lands hit
+                                               5 ; Player lands hit
+                                               4 ; Jackal misses
+                                               5 ; Player lands killer blow
                                                6 ; Jackal would've hit, but dead
                                            ])]
 
     (testing "logs the fight"
       (is (= ["You entered the dungeon"
+              "You miss the Jackal"
+              "The Jackal misses you"
               "You hit the Jackal"
               "The Jackal hits you"
               "You hit the Jackal"
               "The Jackal misses you"
               "You defeated the Jackal"]
              (-> game-start
+                 (move left)
                  (move left)
                  (move left)
                  (move left)
@@ -84,6 +89,7 @@
     (testing "player loses health"
       (is (= 60
              (-> game-start
+                 (move left)
                  (move left)
                  :player
                  :health))))
