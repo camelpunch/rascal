@@ -37,24 +37,41 @@
 (defn- do-battle
   "Runs through new obstacles with new player position, updating game
   state accordingly."
-  [old-state player new-obstacles]
+  [old-state candidate-player new-obstacles]
   (reduce (fn [{acc-log       :log
                 acc-obstacles :obstacles
+                dice-rolls    :dice-rolls
                 :as acc}
                old-obstacle]
-            (let [in-battle?    (= (:coords player) (:coords old-obstacle))
-                  new-obstacle  (if in-battle? (t/damage old-obstacle) old-obstacle)]
-              (assoc acc
-                     :obstacles (conj-obstacles acc-obstacles new-obstacle)
-                     :log       (cond
-                                  (t/dead? new-obstacle)
-                                  (log acc-log "You defeated the " (:name new-obstacle))
+            (if (= (:coords candidate-player) (:coords old-obstacle))
+              (let [dice          (roll dice-rolls 2)
+                    obstacle-hit? (>= (first (:rolled dice)) 5)
+                    player-hit?   (>= (second (:rolled dice)) 5)
+                    new-obstacle  (if obstacle-hit? (t/damage old-obstacle) old-obstacle)
+                    new-player    (if player-hit? (t/damage (:player old-state)) (:player old-state))]
+                (assoc acc
+                       :player     new-player
+                       :dice-rolls (:future dice)
+                       :obstacles  (conj-obstacles acc-obstacles new-obstacle)
+                       :log        (cond
+                                     (t/dead? new-obstacle)
+                                     (log acc-log "You defeated the " (:name new-obstacle))
 
-                                  in-battle?
-                                  (log acc-log "You hit the "      (:name new-obstacle))
+                                     (and obstacle-hit? player-hit?)
+                                     (-> acc-log
+                                         (log "You hit the " (:name new-obstacle))
+                                         (log "The " (:name new-obstacle) " hits you"))
 
-                                  :else
-                                  acc-log))))
+                                     obstacle-hit?
+                                     (-> acc-log
+                                         (log "You hit the " (:name new-obstacle))
+                                         (log "The " (:name new-obstacle) " misses you"))
+
+                                     ; Missing just-player-hit. There's a simpler way!
+
+                                     :else
+                                     acc-log)))
+              (update-in acc [:obstacles] conj old-obstacle)))
           (assoc old-state :obstacles [])
           new-obstacles))
 

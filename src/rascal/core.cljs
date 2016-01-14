@@ -6,13 +6,14 @@
 
 (enable-console-print!)
 
-(def state (r/atom (g/make-game
-                    :board      [30 25]
-                    :player     [15 23]
-                    :monsters   [[\j "Jackal"]
-                                 [\r "Rat"]
-                                 [\p "Pheasant"]]
-                    :dice-rolls (repeatedly #(rand-int 10)))))
+(def state (r/atom
+            (g/make-game
+             :board      [30 25]
+             :player     [15 23]
+             :monsters   [[\j "Jackal"]
+                          [\r "Rat"]
+                          [\p "Pheasant"]]
+             :dice-rolls (repeatedly #(rand-int 10)))))
 
 (def keymap
   {72 #(move % left)

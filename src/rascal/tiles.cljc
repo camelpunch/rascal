@@ -8,7 +8,7 @@
     [tile name health coords]
   Obstacle
   (dead?  [x] ((complement pos?) (:health x)))
-  (damage [x] (update-in x [:health] - 50)))
+  (damage [x] (update-in x [:health] - 40)))
 
 (defn make-creature
   [tile creature-name x y]
@@ -20,7 +20,15 @@
 
 (defn- axis-pos
   [length roll]
-  (-> length (- 2) (* (/ roll 10)) inc int))
+  (let [dice-sides    10
+        wall-count     2
+        zero-offset    1
+        roll-multiply #(* % (/ roll dice-sides))]
+    (-> length
+        (- wall-count zero-offset)
+        roll-multiply
+        inc
+        int)))
 
 (defn place-creatures
   [& {[width height] :board-dimensions
@@ -31,7 +39,8 @@
                y (axis-pos height y-mult)]
            (make-creature tile name x y)))
        creature-pairs
-       (take (count creature-pairs) (partition 2 dice-rolls))))
+       (take (count creature-pairs)
+             (partition 2 dice-rolls))))
 
 (defrecord Wall
     [tile name coords]
