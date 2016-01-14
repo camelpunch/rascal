@@ -55,7 +55,7 @@
   (reduce (fn [{acc-log       :log
                 acc-obstacles :obstacles
                 dice-rolls    :dice-rolls
-                :as acc}
+                :as           acc}
                old-obstacle]
             (if (= (:coords candidate-player) (:coords old-obstacle))
               (let [dice                        (roll dice-rolls 2)
@@ -73,9 +73,9 @@
                        :log        (if (t/dead? new-obstacle)
                                      (log acc-log "You defeated the " (:name new-obstacle))
                                      (reduce battle-log-entry
-                                          acc-log
-                                          [[obstacle-hit? "You" (str "the " (:name new-obstacle))]
-                                           [player-hit? (str "The " (:name new-obstacle)) "you"]]))))
+                                             acc-log
+                                             [[obstacle-hit? "You" (str "the " (:name new-obstacle))]
+                                              [player-hit? (str "The " (:name new-obstacle)) "you"]]))))
               (update-in acc [:obstacles] conj old-obstacle)))
           (assoc old-state :obstacles [])
           new-obstacles))
