@@ -34,6 +34,20 @@
     obstacles
     (conj obstacles new-obstacle)))
 
+(defn- aggressor-verb
+  [aggressor]
+  (if (= "You" aggressor)
+    {true " hit "  false " miss "}
+    {true " hits " false " misses "}))
+
+(defn- battle-log-entry
+  [acc [hit? aggressor victim]]
+  (log acc aggressor ((aggressor-verb aggressor) hit?) victim))
+
+(defn- hits-on-target
+  [dice]
+  (map #(>= % 5) dice))
+
 (defn- do-battle
   "Runs through new obstacles with new player position, updating game
   state accordingly."
@@ -44,38 +58,24 @@
                 :as acc}
                old-obstacle]
             (if (= (:coords candidate-player) (:coords old-obstacle))
-              (let [dice          (roll dice-rolls 2)
-                    obstacle-hit? (>= (first (:rolled dice)) 5)
-                    player-hit?   (>= (second (:rolled dice)) 5)
-                    new-obstacle  (if obstacle-hit? (t/damage old-obstacle) old-obstacle)
-                    new-player    (if player-hit? (t/damage (:player old-state)) (:player old-state))]
+              (let [dice                        (roll dice-rolls 2)
+                    [obstacle-hit? player-hit?] (hits-on-target (:rolled dice))
+                    new-obstacle                (if obstacle-hit?
+                                                  (t/damage old-obstacle)
+                                                  old-obstacle)
+                    new-player                  (if player-hit?
+                                                  (t/damage (:player old-state))
+                                                  (:player old-state))]
                 (assoc acc
                        :player     new-player
                        :dice-rolls (:future dice)
                        :obstacles  (conj-obstacles acc-obstacles new-obstacle)
-                       :log        (cond
-                                     (t/dead? new-obstacle)
+                       :log        (if (t/dead? new-obstacle)
                                      (log acc-log "You defeated the " (:name new-obstacle))
-
-                                     (and obstacle-hit? player-hit?)
-                                     (-> acc-log
-                                         (log "You hit the " (:name new-obstacle))
-                                         (log "The " (:name new-obstacle) " hits you"))
-
-                                     obstacle-hit?
-                                     (-> acc-log
-                                         (log "You hit the " (:name new-obstacle))
-                                         (log "The " (:name new-obstacle) " misses you"))
-
-                                     player-hit?
-                                     (-> acc-log
-                                         (log "You miss the " (:name new-obstacle))
-                                         (log "The " (:name new-obstacle) " hits you"))
-
-                                     :else
-                                     (-> acc-log
-                                         (log "You miss the " (:name new-obstacle))
-                                         (log "The " (:name new-obstacle) " misses you")))))
+                                     (reduce battle-log-entry
+                                          acc-log
+                                          [[obstacle-hit? "You" (str "the " (:name new-obstacle))]
+                                           [player-hit? (str "The " (:name new-obstacle)) "you"]]))))
               (update-in acc [:obstacles] conj old-obstacle)))
           (assoc old-state :obstacles [])
           new-obstacles))
