@@ -1,7 +1,7 @@
 (ns rascal.game-test
   (:use [clojure.test])
   (:require [rascal.test-helpers :refer [rendered]]
-            [rascal.game :refer [make-game move left]]
+            [rascal.game :refer [make-game move left right down]]
             [rascal.tiles :refer [x-axis
                                   y-axis
                                   make-board
@@ -100,3 +100,31 @@
                                                         (move left)
                                                         :obstacles))))))))
 
+(deftest game-over
+  (let [game-start (make-game :board      [12 12]
+                              :player     [ 4  5]
+                              :monsters   [[\j "Jackal"]]
+                              :dice-rolls [ 5  5 ; Jackal at [5 5]
+
+                                               0 ; Player misses
+                                              10 ; Jackal hits
+
+                                               0 ; Player misses
+                                              10 ; Jackal hits
+
+                                               0 ; Player misses
+                                              10 ; Jackal hits and kills player
+                                           ])
+        game-end   (-> game-start
+                       (move right)
+                       (move right)
+                       (move right))]
+
+    (testing "movement no longer works"
+      (is (= {:x 4 :y 5}
+             (get-in (move game-end down) [:player :coords]))))
+
+    (testing "death is logged"
+      (is (= ["The Jackal hits you"
+              "You die"]
+             (take-last 2 (:log game-end)))))))

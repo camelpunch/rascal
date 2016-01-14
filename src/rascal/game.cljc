@@ -84,15 +84,25 @@
   [x ys]
   (some #{(:coords x)} (map :coords ys)))
 
+(defn- extra-log-messages
+  [{player :player
+    :as    s}]
+  (if (t/dead? player)
+    (update-in s [:log] log "You die")
+    s))
+
 (defn move
   [old-state f]
-  (let [{player      :player
-         c-obstacles :obstacles
-         :as candidate-state} (f old-state)]
-    (-> (if (hit-anything? player c-obstacles)
-          (do-battle old-state player c-obstacles)
-          candidate-state)
-        (update-in [:turn] inc))))
+  (if (t/dead? (:player old-state))
+    old-state
+    (let [{player      :player
+           c-obstacles :obstacles
+           :as         candidate-state} (f old-state)]
+      (-> (if (hit-anything? player c-obstacles)
+            (do-battle old-state player c-obstacles)
+            candidate-state)
+          extra-log-messages
+          (update-in [:turn] inc)))))
 
 (def left  #(update-in % t/x-axis dec))
 (def right #(update-in % t/x-axis inc))
