@@ -94,12 +94,16 @@
                               :monsters   [[\j "Jackal"] [\b "Beetle"]]
                               :dice-rolls [ 5  2 ; Jackal at [3 2]
                                            10  3 ; Beetle at [6 3]
+
                                                4 ; Player misses (< 5)
                                                3 ; Jackal misses
+
                                                7 ; Player lands another hit
                                                6 ; Jackal lands hit
+
                                                5 ; Player lands hit
                                                4 ; Jackal misses
+
                                                5 ; Player lands killer blow
                                                6 ; Jackal would've hit, but dead
                                            ])]
