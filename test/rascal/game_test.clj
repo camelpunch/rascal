@@ -5,6 +5,7 @@
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
             [rascal.test-helpers :refer [rendered]]
+            [clojure.string :refer [join]]
             [rascal.game :refer [make-game move left right up down]]
             [rascal.tiles :refer [x-axis
                                   y-axis
@@ -39,18 +40,16 @@
                   (= (get-in game     [:player :health])
                      (get-in end-game [:player :health])))))
 
-(def empty-game (make-game :board      [ 8  8]
-                           :player     [ 3  3]
-                           :monsters   []
-                           :dice-rolls (repeat 10)))
-
 (deftest walls-dont-fight-back
   (let [check (tc/quick-check 100
-                              (no-damage-on-paths empty-game directions))]
+                              (no-damage-on-paths (make-game :board [8 8]
+                                                             :player [3 3]
+                                                             :monsters []
+                                                             :dice-rolls (repeat 10))
+                                                  directions))]
     (is (true? (:result check))
         (str "Can lose health by going "
-             (clojure.string/join ", "
-                                  (first (get-in check [:shrunk :smallest])))))))
+             (join ", " (first (get-in check [:shrunk :smallest])))))))
 
 (deftest creating-a-game
   (let [game-start (make-game :board      [ 8 10]
