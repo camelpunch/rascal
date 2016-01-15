@@ -45,8 +45,10 @@
   (log acc aggressor ((aggressor-verb aggressor) hit?) victim))
 
 (defn- hits-on-target
-  [dice]
-  (map #(>= % 5) dice))
+  [dice obstacle]
+  (if (= \# (:tile obstacle))
+    [false false]
+    (map #(>= % 5) dice)))
 
 (defn- do-battle
   "Runs through new obstacles with new player position, updating game
@@ -59,7 +61,7 @@
                old-obstacle]
             (if (= (:coords candidate-player) (:coords old-obstacle))
               (let [dice                        (roll dice-rolls 2)
-                    [obstacle-hit? player-hit?] (hits-on-target (:rolled dice))
+                    [obstacle-hit? player-hit?] (hits-on-target (:rolled dice) old-obstacle)
                     new-obstacle                (if obstacle-hit?
                                                   (t/damage old-obstacle)
                                                   old-obstacle)
