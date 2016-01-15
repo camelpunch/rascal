@@ -1,14 +1,18 @@
 (ns rascal.tiles)
 
 (defprotocol Obstacle
-  (dead?  [x])
-  (damage [x]))
+  (attack?  [x roll])
+  (defense? [x roll])
+  (dead?    [x])
+  (damage   [x]))
 
 (defrecord Creature
     [tile name health coords]
   Obstacle
-  (dead?  [x] ((complement pos?) (:health x)))
-  (damage [x] (update-in x [:health] - 40)))
+  (attack?  [x roll] (>= roll 5))
+  (defense? [x roll] (>= roll 5))
+  (dead?    [x]      ((complement pos?) (:health x)))
+  (damage   [x]      (update-in x [:health] - 40)))
 
 (defn make-creature
   [tile creature-name x y]
@@ -45,8 +49,10 @@
 (defrecord Wall
     [tile name coords]
   Obstacle
-  (dead?  [_] false)
-  (damage [x] x))
+  (attack?  [_ _] false)
+  (defense? [_ _] false)
+  (dead?    [_]   false)
+  (damage   [x]   x))
 
 (defn make-wall-tile
   [x y]
