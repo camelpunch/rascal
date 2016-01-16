@@ -61,10 +61,6 @@
     (testing "starts on turn 1"
       (is (= 1 (:turn game-start))))
 
-    (testing "shifts the dice rolls"
-      (is (= [0 10]
-             (:dice-rolls game-start))))
-
     (testing "places monsters inside walls"
       (is (= {:x 6 :y 3}
              (:coords (first (filter #(= \b (:tile %))
