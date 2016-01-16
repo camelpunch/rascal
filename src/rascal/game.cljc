@@ -1,5 +1,6 @@
 (ns rascal.game
-  (:require [rascal.tiles :as t]))
+  (:require [rascal.tiles :as t]
+            [clojure.string :refer [join upper-case]]))
 
 (defn- roll
   [rolls n]
@@ -34,15 +35,16 @@
     obstacles
     (conj obstacles new-obstacle)))
 
-(defn- aggressor-verb
-  [aggressor]
-  (if (= "You" aggressor)
-    {true " hit "  false " miss "}
-    {true " hits " false " misses "}))
+(defn- upper-case-first
+  [s]
+  (join (conj (rest s) (upper-case (first s)))))
 
 (defn- battle-log-entry
   [acc [hit? aggressor victim]]
-  (log acc aggressor ((aggressor-verb aggressor) hit?) victim))
+  (log acc (upper-case-first
+            (if hit?
+              (t/hit-verbiage aggressor victim)
+              (t/miss-verbiage aggressor victim)))))
 
 (defn- do-battle
   "Runs through new obstacles with new player position, updating game
@@ -71,8 +73,8 @@
                                      (log acc-log "You defeated the " (:name new-obstacle))
                                      (reduce battle-log-entry
                                              acc-log
-                                             [[obstacle-hit? "You" (str "the " (:name new-obstacle))]
-                                              [player-hit? (str "The " (:name new-obstacle)) "you"]]))))
+                                             [[obstacle-hit? candidate-player new-obstacle]
+                                              [player-hit? new-obstacle candidate-player]]))))
               (update-in acc [:obstacles] conj old-obstacle)))
           (assoc old-state :obstacles [])
           new-obstacles))

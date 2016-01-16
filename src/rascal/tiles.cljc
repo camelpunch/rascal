@@ -1,26 +1,52 @@
 (ns rascal.tiles)
 
 (defprotocol Obstacle
-  (attack?  [x roll])
-  (defense? [x roll])
-  (dead?    [x])
-  (damage   [x]))
+  (attack?        [x roll])
+  (defense?       [x roll])
+  (dead?          [x])
+  (damage         [x])
+  (hit-verbiage   [x victim])
+  (miss-verbiage  [x victim]))
 
 (defrecord Creature
-    [tile name health coords]
+    [tile health coords name battle-name hit-verb miss-verb]
   Obstacle
-  (attack?  [x roll] (>= roll 5))
-  (defense? [x roll] (>= roll 5))
-  (dead?    [x]      ((complement pos?) (:health x)))
-  (damage   [x]      (update-in x [:health] - 40)))
+  (attack?        [x roll] (>= roll 5))
+  (defense?       [x roll] (>= roll 5))
+  (dead?          [x]      ((complement pos?) (:health x)))
+  (damage         [x]      (update-in x [:health] - 40))
+  (hit-verbiage   [x victim]
+    (clojure.string/join " "
+                         [(:battle-name x)
+                          (:hit-verb x)
+                          (:battle-name victim)]))
+  (miss-verbiage  [x victim]
+    (clojure.string/join " "
+                         [(:battle-name x)
+                          (:miss-verb x)
+                          (:battle-name victim)])))
 
 (defn make-creature
   [tile creature-name x y]
   (map->Creature
-   {:tile   tile
-    :name   creature-name
-    :health 100
-    :coords {:x x :y y}}))
+   {:tile        tile
+    :name        creature-name
+    :health      100
+    :coords      {:x x :y y}
+    :battle-name (str "the " creature-name)
+    :hit-verb    "hits"
+    :miss-verb   "misses"}))
+
+(defn make-player
+  [x y]
+  (map->Creature
+   {:tile        \@
+    :name        "Player"
+    :health      100
+    :coords      {:x x :y y}
+    :battle-name "you"
+    :hit-verb    "hit"
+    :miss-verb   "miss"}))
 
 (defn- axis-pos
   [length roll]
@@ -47,19 +73,22 @@
              (partition 2 dice-rolls))))
 
 (defrecord Wall
-    [tile name coords]
+    [tile name coords battle-name]
   Obstacle
-  (attack?  [_ _] false)
-  (defense? [_ _] false)
-  (dead?    [_]   false)
-  (damage   [x]   x))
+  (attack?        [_ _]    false)
+  (defense?       [_ _]    false)
+  (dead?          [_]      false)
+  (damage         [x]      x)
+  (hit-verbiage   [_ _]    "Something")
+  (miss-verbiage  [_ _]    "The wall doesn't want to fight"))
 
 (defn make-wall-tile
   [x y]
   (map->Wall
    {:tile \#
     :name "Wall"
-    :coords {:x x :y y}}))
+    :coords {:x x :y y}
+    :battle-name "the wall"}))
 
 (defn- vert-walls
   [width height]
@@ -92,10 +121,6 @@
   (for [y (range height)]
     (for [x (range width)]
       (make-empty-space x y))))
-
-(defn make-player
-  [x y]
-  (make-creature \@ "Player" x y))
 
 (def x-axis [:player :coords :x])
 (def y-axis [:player :coords :y])
