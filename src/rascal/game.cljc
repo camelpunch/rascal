@@ -4,9 +4,9 @@
 
 (defn- roll
   [rolls n]
-  (let [[rolled future] (split-at n rolls)]
-    {:rolled rolled
-     :future future}))
+  (let [[x y] (split-at n rolls)]
+    {:rolled x
+     :future y}))
 
 (defn make-game
   [& {player-coords    :player
@@ -37,7 +37,8 @@
 
 (defn- upper-case-first
   [s]
-  (join (conj (rest s) (upper-case (first s)))))
+  (join (conj (rest s)
+              (upper-case (first s)))))
 
 (defn- battle-log-entry
   [acc [hit? aggressor victim]]

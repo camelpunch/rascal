@@ -7,13 +7,13 @@
             [rascal.test-helpers :refer [rendered]]
             [clojure.string :refer [join]]
             [rascal.game :refer [make-game move left right up down]]
-            [rascal.tiles :refer [x-axis
-                                  y-axis
-                                  make-board
-                                  make-player
-                                  make-creature
-                                  make-wall-tile
-                                  make-walls-for-board]]
+            [rascal.tiles :as t :refer [x-axis
+                                        y-axis
+                                        make-board
+                                        make-player
+                                        make-creature
+                                        make-wall-tile
+                                        make-walls-for-board]]
             [rascal.render :refer [render]]))
 
 (def dir-fns
@@ -28,25 +28,23 @@
 
 (def directions (gen/elements (keys dir-fns)))
 
-(defn follow-path
+(defn follow
   [game path]
   ((apply comp (map #(get dir-fns %) path))
    game))
 
-(defn no-damage-on-paths
-  [game directions]
-  (prop/for-all [path (gen/vector directions)]
-                (let [end-game (follow-path game path)]
-                  (= (get-in game     [:player :health])
-                     (get-in end-game [:player :health])))))
+(defn on-paths
+  "f must be pred at the end of each path made of dirs"
+  [game dirs pred f]
+  (prop/for-all [path (gen/vector dirs)]
+                (apply pred (map f [game (follow game path)]))))
 
 (deftest walls-dont-fight-back
-  (let [check (tc/quick-check 100
-                              (no-damage-on-paths (make-game :board [8 8]
-                                                             :player [3 3]
-                                                             :monsters []
-                                                             :dice-rolls (repeat 10))
-                                                  directions))]
+  (let [game  (make-game :board      [ 8  8]
+                         :player     [ 3  3]
+                         :monsters   []
+                         :dice-rolls (repeat 10))
+        check (tc/quick-check 100 (on-paths game directions = t/player-health))]
     (is (true? (:result check))
         (str "Can lose health by going "
              (join ", " (first (get-in check [:shrunk :smallest])))))))

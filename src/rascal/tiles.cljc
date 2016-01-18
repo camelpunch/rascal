@@ -48,6 +48,8 @@
     :hit-verb    "hit"
     :miss-verb   "miss"}))
 
+(defn player-health [game] (get-in game [:player :health]))
+
 (defn- axis-pos
   [length roll]
   (let [dice-sides    10

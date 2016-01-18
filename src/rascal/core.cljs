@@ -57,7 +57,7 @@
    [:div.break.yui3-g
     [:div.yui3-u-1-3
      [:h2.bld "Player"]
-     [:p "Health: " (get-in @state [:player :health])]
+     [:p "Health: " (t/player-health @state)]
      [:p "Turn: " (:turn @state)]]
     [:div.yui3-u-1-3.textC
      [:h1.mainHeading "Rascal"]
