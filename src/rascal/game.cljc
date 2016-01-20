@@ -47,37 +47,38 @@
               (t/hit-verbiage aggressor victim)
               (t/miss-verbiage aggressor victim)))))
 
+(defn- battle-player
+  [{acc-log       :log
+    acc-obstacles :obstacles
+    dice-rolls    :dice-rolls
+    old-player    :player
+    :as           acc}
+   candidate-player old-obstacle]
+  (let [dice          (roll dice-rolls 2)
+        obstacle-hit? (t/attack? candidate-player (first (:rolled dice)))
+        player-hit?   (t/defense? old-obstacle (second (:rolled dice)))
+        new-obstacle  (if obstacle-hit? (t/damage old-obstacle) old-obstacle)
+        new-player    (if player-hit?   (t/damage old-player)   old-player)]
+    (assoc acc
+           :player     new-player
+           :dice-rolls (:future dice)
+           :obstacles  (conj-obstacles acc-obstacles new-obstacle)
+           :log        (if (t/dead? new-obstacle)
+                         (log acc-log "You defeated the " (:name new-obstacle))
+                         (reduce battle-log-entry
+                                 acc-log
+                                 [[obstacle-hit? candidate-player new-obstacle]
+                                  [player-hit? new-obstacle candidate-player]])))))
+
 (defn- do-battle
   "Runs through new obstacles with new player position, updating game
   state accordingly."
-  [old-state candidate-player new-obstacles]
-  (reduce (fn [{acc-log       :log
-                acc-obstacles :obstacles
-                dice-rolls    :dice-rolls
-                :as           acc}
-               old-obstacle]
+  [state candidate-player new-obstacles]
+  (reduce (fn [acc old-obstacle]
             (if (= (:coords candidate-player) (:coords old-obstacle))
-              (let [dice                        (roll dice-rolls 2)
-                    obstacle-hit?               (t/attack? candidate-player (first (:rolled dice)))
-                    player-hit?                 (t/defense? old-obstacle (second (:rolled dice)))
-                    new-obstacle                (if obstacle-hit?
-                                                  (t/damage old-obstacle)
-                                                  old-obstacle)
-                    new-player                  (if player-hit?
-                                                  (t/damage (:player old-state))
-                                                  (:player old-state))]
-                (assoc acc
-                       :player     new-player
-                       :dice-rolls (:future dice)
-                       :obstacles  (conj-obstacles acc-obstacles new-obstacle)
-                       :log        (if (t/dead? new-obstacle)
-                                     (log acc-log "You defeated the " (:name new-obstacle))
-                                     (reduce battle-log-entry
-                                             acc-log
-                                             [[obstacle-hit? candidate-player new-obstacle]
-                                              [player-hit? new-obstacle candidate-player]]))))
+              (battle-player acc candidate-player old-obstacle)
               (update-in acc [:obstacles] conj old-obstacle)))
-          (assoc old-state :obstacles [])
+          (assoc state :obstacles [])
           new-obstacles))
 
 (defn- hit-anything?

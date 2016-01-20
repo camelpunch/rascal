@@ -1,4 +1,5 @@
-(ns rascal.tiles)
+(ns rascal.tiles
+  (:require [clojure.string :refer [join]]))
 
 (defprotocol Obstacle
   (attack?        [x roll])
@@ -16,15 +17,15 @@
   (dead?          [x]      ((complement pos?) (:health x)))
   (damage         [x]      (update-in x [:health] - 40))
   (hit-verbiage   [x victim]
-    (clojure.string/join " "
-                         [(:battle-name x)
-                          (:hit-verb x)
-                          (:battle-name victim)]))
+    (join " "
+          [(:battle-name x)
+           (:hit-verb x)
+           (:battle-name victim)]))
   (miss-verbiage  [x victim]
-    (clojure.string/join " "
-                         [(:battle-name x)
-                          (:miss-verb x)
-                          (:battle-name victim)])))
+    (join " "
+          [(:battle-name x)
+           (:miss-verb x)
+           (:battle-name victim)])))
 
 (defn make-creature
   [tile creature-name x y]
