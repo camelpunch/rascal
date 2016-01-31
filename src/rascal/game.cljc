@@ -2,26 +2,20 @@
   (:require [rascal.tiles :as t]
             [clojure.string :refer [join upper-case]]))
 
-(defn- roll
-  [rolls n]
-  (let [[x y] (split-at n rolls)]
-    {:rolled x
-     :future y}))
-
 (defn make-game
   [& {player-coords    :player
       board-dimensions :board
       monsters         :monsters
       dice-rolls       :dice-rolls}]
-  (let [dice (roll dice-rolls (* 2 (count monsters)))]
+  (let [[rolled to-be-rolled] (split-at (* 2 (count monsters)) dice-rolls)]
     {:turn       1
      :player     (apply t/make-player player-coords)
      :board      (apply t/make-board board-dimensions)
      :obstacles  (concat (apply t/make-walls-for-board board-dimensions)
                          (t/place-creatures :board-dimensions board-dimensions
-                                            :dice-rolls       (:rolled dice)
+                                            :dice-rolls       rolled
                                             :creatures        monsters))
-     :dice-rolls (:future dice)
+     :dice-rolls to-be-rolled
      :log        ["You entered the dungeon"]}))
 
 (defn- log
@@ -54,14 +48,14 @@
     old-player    :player
     :as           acc}
    candidate-player old-obstacle]
-  (let [dice          (roll dice-rolls 2)
-        obstacle-hit? (t/attack? candidate-player (first (:rolled dice)))
-        player-hit?   (t/defense? old-obstacle (second (:rolled dice)))
-        new-obstacle  (if obstacle-hit? (t/damage old-obstacle) old-obstacle)
-        new-player    (if player-hit?   (t/damage old-player)   old-player)]
+  (let [[attack-roll defense-roll & future-dice] dice-rolls
+        obstacle-hit?                            (t/attack?  candidate-player attack-roll)
+        player-hit?                              (t/defense? old-obstacle     defense-roll)
+        new-obstacle                             (if obstacle-hit? (t/damage old-obstacle) old-obstacle)
+        new-player                               (if player-hit?   (t/damage old-player)   old-player)]
     (assoc acc
            :player     new-player
-           :dice-rolls (:future dice)
+           :dice-rolls future-dice
            :obstacles  (conj-obstacles acc-obstacles new-obstacle)
            :log        (if (t/dead? new-obstacle)
                          (log acc-log "You defeated the " (:name new-obstacle))
