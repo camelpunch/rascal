@@ -1,6 +1,7 @@
 (ns rascal.game
-  (:require [rascal.tiles :as t]
-            [clojure.string :refer [join upper-case]]))
+  (:require [rascal.logging :refer [log]]
+            [rascal.tiles :as t]
+            [rascal.battle :refer [do-battle]]))
 
 (defn make-game
   [& {player-coords    :player
@@ -18,78 +19,11 @@
      :dice-rolls to-be-rolled
      :log        ["You entered the dungeon"]}))
 
-(defn- log
-  [xs & ys]
-  (conj xs (apply str ys)))
-
-(defn- conj-obstacles
-  "Add to obstacles iff new-obstacle isn't dead."
-  [obstacles new-obstacle]
-  (if (t/dead? new-obstacle)
-    obstacles
-    (conj obstacles new-obstacle)))
-
-(defn- upper-case-first
-  [s]
-  (join (conj (rest s)
-              (upper-case (first s)))))
-
-(defn- battle-log-entry
-  [acc [hit? aggressor victim]]
-  (log acc (upper-case-first
-            (if hit?
-              (t/hit-verbiage aggressor victim)
-              (t/miss-verbiage aggressor victim)))))
-
-(defn- battle-player
-  [{acc-log       :log
-    acc-obstacles :obstacles
-    dice-rolls    :dice-rolls
-    old-player    :player
-    :as           acc}
-   candidate-player old-obstacle]
-  (let [[attack-roll defense-roll & future-dice] dice-rolls
-        obstacle-hit?                            (t/attack?  candidate-player attack-roll)
-        player-hit?                              (t/defense? old-obstacle     defense-roll)
-        new-obstacle                             (if obstacle-hit? (t/damage old-obstacle) old-obstacle)
-        new-player                               (if player-hit?   (t/damage old-player)   old-player)]
-    (assoc acc
-           :player     new-player
-           :dice-rolls future-dice
-           :obstacles  (conj-obstacles acc-obstacles new-obstacle)
-           :log        (if (t/dead? new-obstacle)
-                         (log acc-log "You defeated the " (:name new-obstacle))
-                         (reduce battle-log-entry
-                                 acc-log
-                                 [[obstacle-hit? candidate-player new-obstacle]
-                                  [player-hit? new-obstacle candidate-player]])))))
-
-(defn- hit-anything?
-  [x ys]
-  (some #{(:coords x)} (map :coords ys)))
-
-(defn- do-battle
-  "Runs through new obstacles with new player position, updating game
-  state accordingly."
-  [state
-   {candidate-player :player
-    new-obstacles    :obstacles
-    :as candidate-state}]
-  (if (hit-anything? candidate-player new-obstacles)
-    (reduce (fn [acc old-obstacle]
-              (if (= (:coords candidate-player) (:coords old-obstacle))
-                (battle-player acc candidate-player old-obstacle)
-                (update-in acc [:obstacles] conj old-obstacle)))
-            (assoc state :obstacles [])
-            new-obstacles)
-    candidate-state))
-
 (defn- extra-log-messages
-  [{player :player
-    :as    s}]
-  (if (t/dead? player)
-    (update-in s [:log] log "You die")
-    s))
+  [state]
+  (if (t/dead? (:player state))
+    (update-in state [:log] log "You die")
+    state))
 
 (defn move
   [old-state f]
