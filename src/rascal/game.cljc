@@ -64,20 +64,25 @@
                                  [[obstacle-hit? candidate-player new-obstacle]
                                   [player-hit? new-obstacle candidate-player]])))))
 
-(defn- do-battle
-  "Runs through new obstacles with new player position, updating game
-  state accordingly."
-  [state candidate-player new-obstacles]
-  (reduce (fn [acc old-obstacle]
-            (if (= (:coords candidate-player) (:coords old-obstacle))
-              (battle-player acc candidate-player old-obstacle)
-              (update-in acc [:obstacles] conj old-obstacle)))
-          (assoc state :obstacles [])
-          new-obstacles))
-
 (defn- hit-anything?
   [x ys]
   (some #{(:coords x)} (map :coords ys)))
+
+(defn- do-battle
+  "Runs through new obstacles with new player position, updating game
+  state accordingly."
+  [state
+   {candidate-player :player
+    new-obstacles    :obstacles
+    :as candidate-state}]
+  (if (hit-anything? candidate-player new-obstacles)
+    (reduce (fn [acc old-obstacle]
+              (if (= (:coords candidate-player) (:coords old-obstacle))
+                (battle-player acc candidate-player old-obstacle)
+                (update-in acc [:obstacles] conj old-obstacle)))
+            (assoc state :obstacles [])
+            new-obstacles)
+    candidate-state))
 
 (defn- extra-log-messages
   [{player :player
@@ -90,14 +95,9 @@
   [old-state f]
   (if (t/dead? (:player old-state))
     old-state
-    (let [{player      :player
-           c-obstacles :obstacles
-           :as         candidate-state} (f old-state)]
-      (-> (if (hit-anything? player c-obstacles)
-            (do-battle old-state player c-obstacles)
-            candidate-state)
-          extra-log-messages
-          (update-in [:turn] inc)))))
+    (-> (do-battle old-state (f old-state))
+        extra-log-messages
+        (update-in [:turn] inc))))
 
 (def left  #(update-in % t/x-axis dec))
 (def right #(update-in % t/x-axis inc))
