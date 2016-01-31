@@ -9,6 +9,10 @@
   (hit-verbiage   [x victim])
   (miss-verbiage  [x victim]))
 
+(defn- battle-verbiage
+  [perp victim k]
+  (join " " [(:battle-name perp) (k perp) (:battle-name victim)]))
+
 (defrecord Creature
     [tile health coords name battle-name hit-verb miss-verb]
   Obstacle
@@ -16,16 +20,8 @@
   (defense?       [x roll] (>= roll 5))
   (dead?          [x]      ((complement pos?) (:health x)))
   (damage         [x]      (update-in x [:health] - 40))
-  (hit-verbiage   [x victim]
-    (join " "
-          [(:battle-name x)
-           (:hit-verb x)
-           (:battle-name victim)]))
-  (miss-verbiage  [x victim]
-    (join " "
-          [(:battle-name x)
-           (:miss-verb x)
-           (:battle-name victim)])))
+  (hit-verbiage   [x victim] (battle-verbiage x victim :hit-verb))
+  (miss-verbiage  [x victim] (battle-verbiage x victim :miss-verb)))
 
 (defn make-creature
   [tile creature-name x y]
@@ -38,11 +34,20 @@
     :hit-verb    "hits"
     :miss-verb   "misses"}))
 
+(defrecord Player
+    [tile health coords battle-name hit-verb miss-verb]
+  Obstacle
+  (attack?        [x roll]   (>= roll 5))
+  (defense?       [x roll]   (>= roll 5))
+  (dead?          [x]        ((complement pos?) (:health x)))
+  (damage         [x]        (update-in x [:health] - 40))
+  (hit-verbiage   [x victim] (battle-verbiage x victim :hit-verb))
+  (miss-verbiage  [x victim] (battle-verbiage x victim :miss-verb)))
+
 (defn make-player
   [x y]
-  (map->Creature
+  (map->Player
    {:tile        \@
-    :name        "Player"
     :health      100
     :coords      {:x x :y y}
     :battle-name "you"
