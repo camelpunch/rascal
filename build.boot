@@ -3,7 +3,7 @@
                           [adzerk/boot-test "1.1.0" :scope "test"]
                           [pandeiro/boot-http "0.7.1-SNAPSHOT" :scope "test"]
                           [org.clojure/tools.namespace "0.2.11" :scope "test"]
-                          [org.clojure/test.check "0.9.0"]
+                          [org.clojure/test.check "0.9.0" :scope "test"]
                           [org.clojure/clojurescript "1.7.170"]
                           [reagent "0.6.0-alpha"]
                           [bidi "1.24.0"]
