@@ -8,7 +8,7 @@
                           [reagent "0.6.0-alpha"]
                           [bidi "1.24.0"]
                           [hiccup "1.0.5"]]
-          :source-paths #{"src"}
+          :source-paths #{"src" "test"}
           :resource-paths #{"html" "css"})
 
 (require '[adzerk.boot-cljs :refer :all]
@@ -17,11 +17,6 @@
          '[adzerk.boot-test :refer :all]
          '[rascal.pages :as pages]
          '[clojure.java.io :as io])
-
-(deftask testing
-  []
-  (set-env! :source-paths #(conj % "test"))
-  identity)
 
 (deftask index-html
   []
