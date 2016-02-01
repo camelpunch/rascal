@@ -1,6 +1,7 @@
 (ns rascal.render-test
-  (:use [clojure.test])
-  (:require [rascal.test-helpers :refer [rendered]]
+  #?(:clj (:use [clojure.test]))
+  (:require #?(:cljs [cljs.test :refer-macros [deftest is]])
+            [rascal.test-helpers :refer [rendered]]
             [rascal.render :refer [render]]
             [rascal.tiles :as t]))
 
