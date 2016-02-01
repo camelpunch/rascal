@@ -1,7 +1,7 @@
 (ns rascal.game
   (:require [rascal.logging :refer [log]]
             [rascal.tiles :as t]
-            [rascal.battle :refer [do-battle]]))
+            [rascal.battle :as b]))
 
 (defn make-game
   [& {player-coords    :player
@@ -29,7 +29,7 @@
   [old-state f]
   (if (t/dead? (:player old-state))
     old-state
-    (-> (do-battle old-state (f old-state))
+    (-> (b/do-battle old-state (f old-state))
         extra-log-messages
         (update-in [:turn] inc))))
 

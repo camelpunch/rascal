@@ -22,7 +22,7 @@
     obstacles
     (conj obstacles new-obstacle)))
 
-(defn- battle-player
+(defn- battle-obstacle
   [{acc-log       :log
     acc-obstacles :obstacles
     dice-rolls    :dice-rolls
@@ -59,7 +59,7 @@
   (if (hit-anything? candidate-player new-obstacles)
     (reduce (fn [acc old-obstacle]
               (if (= (:coords candidate-player) (:coords old-obstacle))
-                (battle-player acc candidate-player old-obstacle)
+                (battle-obstacle acc candidate-player old-obstacle)
                 (update-in acc [:obstacles] conj old-obstacle)))
             (assoc state :obstacles [])
             new-obstacles)
