@@ -44,6 +44,15 @@
   (hit-verbiage   [x victim] (battle-verbiage x victim :hit-verb))
   (miss-verbiage  [x victim] (battle-verbiage x victim :miss-verb)))
 
+(defn attack
+  [candidate-player old-player obstacle attack-roll defense-roll]
+  (let [obstacle-hit? (attack? candidate-player attack-roll)
+        player-hit?   (defense? obstacle defense-roll)]
+    {:obstacle-hit? obstacle-hit?
+     :player-hit?   player-hit?
+     :new-obstacle  (if obstacle-hit? (damage obstacle)   obstacle)
+     :new-player    (if player-hit?   (damage old-player) old-player)}))
+
 (defn make-player
   [x y]
   (map->Player

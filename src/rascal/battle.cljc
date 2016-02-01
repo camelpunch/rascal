@@ -23,17 +23,21 @@
     (conj obstacles new-obstacle)))
 
 (defn- battle-obstacle
-  [{acc-log       :log
-    acc-obstacles :obstacles
-    dice-rolls    :dice-rolls
-    old-player    :player
-    :as           acc}
-   candidate-player old-obstacle]
-  (let [[attack-roll defense-roll & future-dice] dice-rolls
-        obstacle-hit?                            (t/attack?  candidate-player attack-roll)
-        player-hit?                              (t/defense? old-obstacle     defense-roll)
-        new-obstacle                             (if obstacle-hit? (t/damage old-obstacle) old-obstacle)
-        new-player                               (if player-hit?   (t/damage old-player)   old-player)]
+  [{acc-log                                  :log
+    acc-obstacles                            :obstacles
+    [attack-roll defense-roll & future-dice] :dice-rolls
+    old-player                               :player
+    :as                                      acc}
+   candidate-player
+   old-obstacle]
+  (let [{obstacle-hit? :obstacle-hit?
+         player-hit?   :player-hit?
+         new-obstacle  :new-obstacle
+         new-player    :new-player}   (t/attack candidate-player
+                                                old-player
+                                                old-obstacle
+                                                attack-roll
+                                                defense-roll)]
     (assoc acc
            :player     new-player
            :dice-rolls future-dice
