@@ -5,6 +5,7 @@
                           [org.clojure/tools.namespace "0.2.11" :scope "test"]
                           [org.clojure/test.check "0.9.0" :scope "test"]
                           [org.clojure/clojurescript "1.7.170"]
+                          [com.cemerick/piggieback "0.2.1" :scope "test"]
                           [reagent "0.6.0-alpha"]
                           [bidi "1.24.0"]
                           [hiccup "1.0.5"]]
