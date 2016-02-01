@@ -1,9 +1,11 @@
 (ns rascal.game-test
-  (:use [clojure.test])
-  (:require [clojure.test.check :as tc]
-            [clojure.test.check.clojure-test :refer [defspec]]
+  #?(:clj (:use [clojure.test]))
+  (:require #?(:cljs [cljs.test :refer-macros [deftest is testing]])
+            #?(:clj  [clojure.test.check.clojure-test :refer [defspec]])
+            #?(:clj  [clojure.test.check.properties :as prop]
+               :cljs [clojure.test.check.properties :as prop :include-macros true])
+            [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
-            [clojure.test.check.properties :as prop]
             [rascal.test-helpers :refer [rendered]]
             [clojure.string :refer [join]]
             [rascal.game :refer [make-game move left right up down]]
