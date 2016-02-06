@@ -43,7 +43,7 @@
 
 (deftest walls-dont-fight-back
   (let [game  (make-game :board      [ 8  8]
-                         :player     (t/make-player 3 3)
+                         :player     (t/make-player 3 3 10)
                          :monsters   []
                          :dice-rolls (repeat 10))
         check (tc/quick-check 100 (on-paths game directions = t/player-health))]
@@ -53,7 +53,7 @@
 
 (deftest creating-a-game
   (let [game-start (make-game :board      [ 8 10]
-                              :player     (t/make-player 5 2)
+                              :player     (t/make-player 5 2 10)
                               :monsters   [[\j "Jackal"] [\b "Beetle"]]
                               :dice-rolls [ 5  2
                                            10  3
@@ -69,14 +69,14 @@
 (deftest movement
   (testing "normal movement moves player"
     (is (= 4
-           (get-in (-> (make-game :player     (t/make-player 5 1)
+           (get-in (-> (make-game :player     (t/make-player 5 1 10)
                                   :board      [6 6]
                                   :dice-rolls [10 10]) ; positioning
                        (move left))
                    [:player :coords :x]))))
   (testing "into wall"
     (is (= 1
-           (get-in (-> (make-game :player (t/make-player 1 1)
+           (get-in (-> (make-game :player (t/make-player 1 1 10)
                                   :board  [3 3]
                                   :dice-rolls [0 0   ; positioning
                                                0 0]) ; 'fighting' the wall
@@ -85,7 +85,7 @@
 
 (deftest collision
   (let [game-start (make-game :board      [ 8 10]
-                              :player     (t/make-player 4 2)
+                              :player     (t/make-player 4 2 10)
                               :monsters   [[\j "Jackal"] [\b "Beetle"]]
                               :dice-rolls [ 5  2 ; Jackal at [3 2]
                                            10  3 ; Beetle at [6 3]
@@ -152,7 +152,7 @@
 
 (deftest game-over
   (let [game-start (make-game :board      [12 12]
-                              :player     (t/make-player 4 5)
+                              :player     (t/make-player 4 5 10)
                               :monsters   [[\j "Jackal"]]
                               :dice-rolls [ 5  5 ; Jackal at [5 5]
 

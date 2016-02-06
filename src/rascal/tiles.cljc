@@ -35,24 +35,26 @@
     :miss-verb   "misses"}))
 
 (defrecord Player
-    [tile health coords battle-name hit-verb miss-verb]
+    [tile health coords battle-name hit-verb miss-verb
+     damage-multiplier]
   Obstacle
   (attack?        [x roll]   (>= roll 5))
   (defense?       [x roll]   (>= roll 5))
   (dead?          [x]        ((complement pos?) (:health x)))
-  (damage         [x roll]   (update-in x [:health] - (* 10 roll)))
+  (damage         [x roll]   (update-in x [:health] - (* damage-multiplier roll)))
   (hit-verbiage   [x victim] (battle-verbiage x victim :hit-verb))
   (miss-verbiage  [x victim] (battle-verbiage x victim :miss-verb)))
 
 (defn make-player
-  [x y]
+  [x y damage-multiplier]
   (map->Player
-   {:tile        \@
-    :health      100
-    :coords      {:x x :y y}
-    :battle-name "you"
-    :hit-verb    "hit"
-    :miss-verb   "miss"}))
+   {:tile              \@
+    :health            100
+    :coords            {:x x :y y}
+    :battle-name       "you"
+    :hit-verb          "hit"
+    :miss-verb         "miss"
+    :damage-multiplier damage-multiplier}))
 
 (defn player-health [game] (get-in game [:player :health]))
 
