@@ -5,7 +5,7 @@
   (attack?        [x roll])
   (defense?       [x roll])
   (dead?          [x])
-  (damage         [x])
+  (damage         [x roll])
   (hit-verbiage   [x victim])
   (miss-verbiage  [x victim]))
 
@@ -16,10 +16,10 @@
 (defrecord Creature
     [tile health coords name battle-name hit-verb miss-verb]
   Obstacle
-  (attack?        [x roll] (>= roll 5))
-  (defense?       [x roll] (>= roll 5))
-  (dead?          [x]      ((complement pos?) (:health x)))
-  (damage         [x]      (update-in x [:health] - 40))
+  (attack?        [x roll]   (>= roll 5))
+  (defense?       [x roll]   (>= roll 5))
+  (dead?          [x]        ((complement pos?) (:health x)))
+  (damage         [x roll]   (update-in x [:health] - (* 10 roll)))
   (hit-verbiage   [x victim] (battle-verbiage x victim :hit-verb))
   (miss-verbiage  [x victim] (battle-verbiage x victim :miss-verb)))
 
@@ -40,18 +40,9 @@
   (attack?        [x roll]   (>= roll 5))
   (defense?       [x roll]   (>= roll 5))
   (dead?          [x]        ((complement pos?) (:health x)))
-  (damage         [x]        (update-in x [:health] - 40))
+  (damage         [x roll]   (update-in x [:health] - (* 10 roll)))
   (hit-verbiage   [x victim] (battle-verbiage x victim :hit-verb))
   (miss-verbiage  [x victim] (battle-verbiage x victim :miss-verb)))
-
-(defn attack
-  [candidate-player old-player obstacle attack-roll defense-roll]
-  (let [obstacle-hit? (attack? candidate-player attack-roll)
-        player-hit?   (defense? obstacle defense-roll)]
-    {:obstacle-hit? obstacle-hit?
-     :player-hit?   player-hit?
-     :new-obstacle  (if obstacle-hit? (damage obstacle)   obstacle)
-     :new-player    (if player-hit?   (damage old-player) old-player)}))
 
 (defn make-player
   [x y]
@@ -81,13 +72,13 @@
   [& {[width height] :board-dimensions
       dice-rolls     :dice-rolls
       creature-pairs :creatures}]
-  (map (fn [[tile name] [x-mult y-mult]]
-         (let [x (axis-pos width x-mult)
-               y (axis-pos height y-mult)]
-           (make-creature tile name x y)))
-       creature-pairs
-       (take (count creature-pairs)
-             (partition 2 dice-rolls))))
+  (let [coord-rolls (partition 2 dice-rolls)]
+    (map (fn [[tile name] [x-mult y-mult]]
+           (let [x (axis-pos width x-mult)
+                 y (axis-pos height y-mult)]
+             (make-creature tile name x y)))
+         creature-pairs
+         (take (count creature-pairs) coord-rolls))))
 
 (defrecord Wall
     [tile name coords battle-name]
@@ -95,7 +86,7 @@
   (attack?        [_ _]    false)
   (defense?       [_ _]    false)
   (dead?          [_]      false)
-  (damage         [x]      x)
+  (damage         [x _]    x)
   (hit-verbiage   [_ _]    "Something")
   (miss-verbiage  [_ _]    "The wall doesn't want to fight"))
 

@@ -22,22 +22,46 @@
     obstacles
     (conj obstacles new-obstacle)))
 
+(defn- attack
+  "Return a value representing an attack's consequences"
+  [candidate-player old-player obstacle
+   attack-roll attack-damage-roll
+   defense-roll defense-damage-roll]
+  (let [obstacle-hit? (t/attack? candidate-player attack-roll)
+        player-hit?   (t/defense? obstacle defense-roll)
+        new-obstacle  (if obstacle-hit?
+                        (t/damage obstacle attack-damage-roll)
+                        obstacle)
+        new-player    (if (and player-hit? (not (t/dead? new-obstacle)))
+                        (t/damage old-player defense-damage-roll)
+                        old-player)]
+    {:obstacle-hit? obstacle-hit?
+     :player-hit?   player-hit?
+     :new-obstacle  new-obstacle
+     :new-player    new-player}))
+
 (defn- battle-obstacle
-  [{acc-log                                  :log
-    acc-obstacles                            :obstacles
-    [attack-roll defense-roll & future-dice] :dice-rolls
-    old-player                               :player
-    :as                                      acc}
+  [{acc-log              :log
+    acc-obstacles        :obstacles
+    [attack-roll
+     attack-damage-roll
+     defense-roll
+     defense-damage-roll
+     & future-dice]      :dice-rolls
+    old-player           :player
+    :as                  acc}
    candidate-player
    old-obstacle]
   (let [{obstacle-hit? :obstacle-hit?
          player-hit?   :player-hit?
          new-obstacle  :new-obstacle
-         new-player    :new-player}   (t/attack candidate-player
-                                                old-player
-                                                old-obstacle
-                                                attack-roll
-                                                defense-roll)]
+         new-player    :new-player}   (attack candidate-player
+                                              old-player
+                                              old-obstacle
+                                              attack-roll
+                                              attack-damage-roll
+                                              defense-roll
+                                              defense-damage-roll)]
     (assoc acc
            :player     new-player
            :dice-rolls future-dice
@@ -68,4 +92,3 @@
             (assoc state :obstacles [])
             new-obstacles)
     candidate-state))
-

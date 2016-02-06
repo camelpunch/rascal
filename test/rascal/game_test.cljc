@@ -91,16 +91,24 @@
                                            10  3 ; Beetle at [6 3]
 
                                                4 ; Player misses (< 5)
+                                               4 ; damage irrelevant
                                                3 ; Jackal misses
+                                               9 ; damage irrelevant
 
-                                               7 ; Player lands another hit
+                                               7 ; Player lands a hit
+                                               4 ; 40 damage
                                                6 ; Jackal lands hit
+                                               4 ; 40 damage
 
                                                5 ; Player lands hit
+                                               4 ; 40 damage
                                                4 ; Jackal misses
+                                               9 ; damage irrelevant
 
                                                5 ; Player lands killer blow
+                                               4 ; of 40 damage
                                                6 ; Jackal would've hit, but dead
+                                               9 ; damage irrelevant
                                            ])]
 
     (testing "logs the fight"
@@ -135,10 +143,12 @@
                  :health))))
 
     (testing "other monsters unaffected"
-      (is (= (make-creature \b "Beetle" 6 3)
-             (second (filter #(contains? % :health) (-> game-start
-                                                        (move left)
-                                                        :obstacles))))))))
+      (is (= [(assoc (make-creature \j "Jackal" 3 2) :health 60)
+              (make-creature \b "Beetle" 6 3)]
+             (filter #(not= \# (:tile %)) (-> game-start
+                                              (move left)
+                                              (move left)
+                                              :obstacles)))))))
 
 (deftest game-over
   (let [game-start (make-game :board      [12 12]
@@ -147,13 +157,19 @@
                               :dice-rolls [ 5  5 ; Jackal at [5 5]
 
                                                0 ; Player misses
+                                               9 ; damage irrelevant
                                               10 ; Jackal hits
+                                               4 ; 40 damage
 
                                                0 ; Player misses
+                                               9 ; damage irrelevant
                                               10 ; Jackal hits
+                                               4 ; 40 damage
 
                                                0 ; Player misses
+                                               9 ; damage irrelevant
                                               10 ; Jackal hits and kills player
+                                               4 ; with 40
                                            ])
         game-end   (-> game-start
                        (move right)

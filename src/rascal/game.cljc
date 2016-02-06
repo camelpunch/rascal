@@ -8,13 +8,13 @@
       board-dimensions :board
       monsters         :monsters
       dice-rolls       :dice-rolls}]
-  (let [[rolled to-be-rolled] (split-at (* 2 (count monsters)) dice-rolls)]
+  (let [[coord-rolls to-be-rolled] (split-at (* 2 (count monsters)) dice-rolls)]
     {:turn       1
      :player     (apply t/make-player player-coords)
      :board      (apply t/make-board board-dimensions)
      :obstacles  (concat (apply t/make-walls-for-board board-dimensions)
                          (t/place-creatures :board-dimensions board-dimensions
-                                            :dice-rolls       rolled
+                                            :dice-rolls       coord-rolls
                                             :creatures        monsters))
      :dice-rolls to-be-rolled
      :log        ["You entered the dungeon"]}))
