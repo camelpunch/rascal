@@ -19,19 +19,22 @@
      :dice-rolls to-be-rolled
      :log        ["You entered the dungeon"]}))
 
+(defn- game-over? [state] (-> state :player t/dead?))
+
 (defn- extra-log-messages
   [state]
-  (if (t/dead? (:player state))
+  (if (game-over? state)
     (update-in state [:log] log "You die")
     state))
 
 (defn move
-  [old-state f]
-  (if (t/dead? (:player old-state))
-    old-state
-    (-> (b/do-battle old-state (f old-state))
-        extra-log-messages
-        (update-in [:turn] inc))))
+  [state f]
+  (if (game-over? state)
+    state
+    (let [new-state (f state)]
+      (-> (b/do-battle state new-state)
+          extra-log-messages
+          (update-in [:turn] inc)))))
 
 (def left  #(update-in % t/x-axis dec))
 (def right #(update-in % t/x-axis inc))
