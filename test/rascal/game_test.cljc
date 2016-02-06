@@ -36,7 +36,7 @@
    game))
 
 (defn on-paths
-  "f must be pred at the end of each path made of dirs"
+  "f of game must be pred at the end of each path made of dirs"
   [game dirs pred f]
   (prop/for-all [path (gen/vector dirs)]
                 (apply pred (map f [game (follow game path)]))))
