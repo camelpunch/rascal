@@ -13,7 +13,7 @@
            #j..#
            #####")
          (render {:board     (t/make-board  5 5)
-                  :player    (t/make-player 3 2)
+                  :player    (t/make-player 3 2 10)
                   :obstacles (conj (t/make-walls-for-board 5 5)
                                    (t/make-creature \j "Jackal" 1 3)
                                    (t/make-creature \r "Rat"    2 1))}))))
