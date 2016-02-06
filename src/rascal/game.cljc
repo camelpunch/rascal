@@ -4,13 +4,13 @@
             [rascal.battle :as b]))
 
 (defn make-game
-  [& {player-coords    :player
+  [& {player           :player
       board-dimensions :board
       monsters         :monsters
       dice-rolls       :dice-rolls}]
   (let [[coord-rolls to-be-rolled] (split-at (* 2 (count monsters)) dice-rolls)]
     {:turn       1
-     :player     (apply t/make-player player-coords)
+     :player     player
      :board      (apply t/make-board board-dimensions)
      :obstacles  (concat (apply t/make-walls-for-board board-dimensions)
                          (t/place-creatures :board-dimensions board-dimensions

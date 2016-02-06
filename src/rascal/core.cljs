@@ -9,7 +9,7 @@
 (def state (r/atom
             (g/make-game
              :board      [30 25]
-             :player     [15 23]
+             :player     (t/make-player 15 23)
              :monsters   [[\j "Jackal"]
                           [\r "Rat"]
                           [\p "Pheasant"]]
