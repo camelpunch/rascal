@@ -28,6 +28,7 @@
     state))
 
 (defn move
+  "The main integrating function for the whole game"
   [state f]
   (if (game-over? state)
     state
