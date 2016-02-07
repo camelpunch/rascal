@@ -32,7 +32,7 @@
 
 (defn follow
   [game path]
-  ((apply comp (map #(get dir-fns %) path))
+  ((apply comp (reverse (map #(get dir-fns %) path)))
    game))
 
 (defn on-paths
