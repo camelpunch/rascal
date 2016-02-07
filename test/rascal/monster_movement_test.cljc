@@ -23,25 +23,34 @@
   (testing "x axis movement"
     (let [player-x    3
           player-y    3
-          moveable?   #(or (< % (dec player-x)) (> % (inc player-x)))
+          moveable?   #(or (< % (dec player-x))
+                           (> % (inc player-x))
+                           (< % (dec player-y))
+                           (> % (inc player-y)))
           moveable-xs (such-that moveable? nat)
           check       (tc/quick-check
                        100
                        (for-all
                         [x1 moveable-xs
-                         x2 moveable-xs]
+                         x2 moveable-xs
+                         y1 moveable-xs
+                         y2 moveable-xs]
                         (let [state       {:player    (t/make-player player-x player-y 10)
-                                           :obstacles [(t/make-creature \f "Foo" x1 player-y)
-                                                       (t/make-creature \g "Goo" x2 player-y)]}
+                                           :obstacles [(t/make-creature \f "Foo" x1 y1)
+                                                       (t/make-creature \g "Goo" x2 y2)]}
                               after-state (move-monsters state)
-                              new-x1      (-> after-state :obstacles (first-named "Foo") :coords :x)
-                              new-x2      (-> after-state :obstacles (first-named "Goo") :coords :x)]
+                              {new-x1 :x
+                               new-y1 :y} (-> after-state :obstacles (first-named "Foo") :coords)
+                              {new-x2 :x
+                               new-y2 :y} (-> after-state :obstacles (first-named "Goo") :coords)]
                           (and (moves-toward? player-x x1 new-x1)
-                               (moves-toward? player-x x2 new-x2)))))]
+                               (moves-toward? player-x x2 new-x2)
+                               (moves-toward? player-y y1 new-y1)
+                               (moves-toward? player-y y2 new-y2)))))]
       (is (true? (:result check))
           (str "When monsters are at "
                (get-in check [:shrunk :smallest])
-               ", one didn't move toward player.\n"
+               ", one didn't move toward player on both axes.\n"
                check)))))
 
 (deftest walls-dont-move
