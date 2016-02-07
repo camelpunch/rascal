@@ -2,6 +2,7 @@
   (:require [clojure.string :refer [join]]))
 
 (defprotocol Obstacle
+  (move           [x axis f])
   (attack?        [x roll])
   (defense?       [x roll])
   (dead?          [x])
@@ -16,6 +17,7 @@
 (defrecord Creature
     [tile health coords name battle-name hit-verb miss-verb]
   Obstacle
+  (move           [x axis f] (update-in x axis f))
   (attack?        [x roll]   (>= roll 5))
   (defense?       [x roll]   (>= roll 5))
   (dead?          [x]        ((complement pos?) (:health x)))
@@ -38,6 +40,7 @@
     [tile health coords battle-name hit-verb miss-verb
      damage-multiplier]
   Obstacle
+  (move           [x axis f] (update-in x axis f))
   (attack?        [x roll]   (>= roll 5))
   (defense?       [x roll]   (>= roll 5))
   (dead?          [x]        ((complement pos?) (:health x)))
@@ -85,6 +88,7 @@
 (defrecord Wall
     [tile name coords battle-name]
   Obstacle
+  (move           [x _ _]  x)
   (attack?        [_ _]    false)
   (defense?       [_ _]    false)
   (dead?          [_]      false)
@@ -132,5 +136,5 @@
     (for [x (range width)]
       (make-empty-space x y))))
 
-(def x-axis [:player :coords :x])
-(def y-axis [:player :coords :y])
+(def x-axis [:coords :x])
+(def y-axis [:coords :y])

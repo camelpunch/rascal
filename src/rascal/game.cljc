@@ -1,6 +1,7 @@
 (ns rascal.game
   (:require [rascal.logging :refer [log]]
             [rascal.tiles :as t]
+            [rascal.monster-movement :as mm]
             [rascal.battle :as b]))
 
 (defn make-game
@@ -33,11 +34,12 @@
   (if (game-over? state)
     state
     (let [new-state (f state)]
-      (-> (b/do-battle state new-state)
+      (-> state
+          (b/do-battle new-state)
           extra-log-messages
           (update-in [:turn] inc)))))
 
-(def left  #(update-in % t/x-axis dec))
-(def right #(update-in % t/x-axis inc))
-(def up    #(update-in % t/y-axis dec))
-(def down  #(update-in % t/y-axis inc))
+(def left  #(update-in % [:player] t/move t/x-axis dec))
+(def right #(update-in % [:player] t/move t/x-axis inc))
+(def up    #(update-in % [:player] t/move t/y-axis dec))
+(def down  #(update-in % [:player] t/move t/y-axis inc))
