@@ -35,7 +35,7 @@
     state
     (let [new-state (f state)]
       (-> state
-          (b/do-battle (mm/move-monsters new-state))
+          (b/do-battle new-state)
           extra-log-messages
           (update-in [:turn] inc)))))
 
