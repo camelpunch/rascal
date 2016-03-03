@@ -1,19 +1,48 @@
 (ns rascal.core
   (:require [reagent.core :as r]
-            [rascal.game :as g :refer [move left right up down]]
+            [rascal.game :as g :refer [make-game move left right up down]]
             [rascal.tiles :as t]
             [rascal.render :refer [render]]))
 
 (enable-console-print!)
 
-(def state (r/atom
-            (g/make-game
-             :board      [30 25]
-             :player     (t/make-player 15 23 1)
-             :monsters   [[\j "Jackal"]
-                          [\r "Rat"]
-                          [\p "Pheasant"]]
-             :dice-rolls (repeatedly #(rand-int 10)))))
+(declare main-focused)
+(defn ^:export run
+  []
+  (r/render [main-focused] (js/document.getElementById "app")))
+
+(def state
+  (r/atom
+   (make-game
+    :board      [30 25]
+    :player     (t/make-player 15 23 1)
+    :monsters   [[\j "Jackal"]
+                 [\r "Rat"]
+                 [\p "Pheasant"]]
+    :dice-rolls (repeatedly #(rand-int 10)))))
+
+(def debug-fixture
+  {:game (make-game :board      [12 12]
+                    :player     (t/make-player 4 5 10)
+                    :monsters   [[\j "Jackal"]]
+                    :dice-rolls [ 5  5      ; Jackal at [5 5]
+
+                                 0          ; Player misses
+                                 9          ; damage irrelevant
+                                 10         ; Jackal hits
+                                 4          ; 40 damage
+
+                                 0          ; Player misses
+                                 9          ; damage irrelevant
+                                 10         ; Jackal hits
+                                 4          ; 40 damage
+
+                                 0          ; Player misses
+                                 9          ; damage irrelevant
+                                 10         ; Jackal hits and kills player
+                                 4          ; with 40
+                                 ])
+   :path   [right right right]})
 
 (def keymap
   {72 #(move % left)
@@ -27,8 +56,14 @@
 
 (defn keydown-handler
   [e]
-  (when-let [f (keymap (-> e .-keyCode))]
-    (swap! state f)))
+  (if (= 80 (.-keyCode e))
+    (do
+      (reset! state (:game debug-fixture))
+      (doseq [[idx step] (map-indexed vector (:path debug-fixture))]
+        (js/setTimeout #(swap! state move step) (* idx 1000))))
+    (when-let [f (keymap (.-keyCode e))]
+      (println "Keydown")
+      (swap! state f))))
 
 (defn game-cell
   [idx contents]
@@ -78,7 +113,3 @@
   (-> main (with-meta {:component-did-mount
                        (fn [this]
                          (.focus (js/document.getElementById "game")))})))
-
-(defn ^:export run
-  []
-  (r/render [main-focused] (js/document.getElementById "app")))
