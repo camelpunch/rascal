@@ -33,10 +33,11 @@
    game))
 
 (defn on-paths
-  "f of game must be pred at the end of each path made of dirs"
-  [game dirs pred f]
+  "f of start must be pred at the end of each path made of dirs"
+  [start dirs pred f]
   (prop/for-all [path (gen/vector dirs)]
-                (apply pred (map f [game (follow game path)]))))
+                (let [end (follow start path)]
+                  (apply pred (map f [start end])))))
 
 (deftest walls-dont-fight-back
   (let [game  (make-game :board      [ 8  8]
