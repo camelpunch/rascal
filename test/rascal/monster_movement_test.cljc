@@ -19,14 +19,17 @@
   [xs name]
   (first (filter #(= name (:name %)) xs)))
 
+(defn moveable?
+  [n x y]
+  (or (< n (dec x))
+      (> n (inc x))
+      (< n (dec y))
+      (> n (inc y))))
+
 (deftest monsters-move-towards-player
   (let [player-x    3
         player-y    3
-        moveable?   #(or (< % (dec player-x))
-                         (> % (inc player-x))
-                         (< % (dec player-y))
-                         (> % (inc player-y)))
-        moveable-xs (such-that moveable? nat)
+        moveable-xs (such-that #(moveable? % player-x player-y) nat)
         check       (tc/quick-check
                      100
                      (for-all

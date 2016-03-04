@@ -7,6 +7,7 @@
             [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
             [clojure.string :refer [join]]
+            [rascal.test-helpers :refer [make-path-follower on-paths directions]]
             [rascal.game :refer [make-game left right up down]]
             [rascal.tiles :as t :refer [make-creature]]
             [rascal.battle :refer [do-battle]]))
@@ -15,36 +16,15 @@
   [state f]
   (do-battle state (f state)))
 
-(def dir-fns
-  {"left"       #(go % left)
-   "right"      #(go % right)
-   "up"         #(go % up)
-   "down"       #(go % down)
-   "up-left"    #(go % (comp up left))
-   "up-right"   #(go % (comp up right))
-   "down-left"  #(go % (comp down left))
-   "down-right" #(go % (comp down right))})
-
-(def directions (gen/elements (keys dir-fns)))
-
-(defn follow
-  [game path]
-  ((apply comp (reverse (map #(get dir-fns %) path)))
-   game))
-
-(defn on-paths
-  "f of start must be pred at the end of each path made of dirs"
-  [start dirs pred f]
-  (prop/for-all [path (gen/vector dirs)]
-                (let [end (follow start path)]
-                  (apply pred (map f [start end])))))
-
 (deftest walls-dont-fight-back
   (let [game  (make-game :board      [ 8  8]
                          :player     (t/make-player 3 3 10)
                          :monsters   []
                          :dice-rolls (repeat 10))
-        check (tc/quick-check 100 (on-paths game directions = t/player-health))]
+        check (tc/quick-check 100
+                              (make-path-follower game
+                                                  go
+                                                  #(= 100 (t/player-health %))))]
     (is (true? (:result check))
         (str "Can lose health by going "
              (join ", " (first (get-in check [:shrunk :smallest])))))))
