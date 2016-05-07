@@ -33,7 +33,7 @@
   [state f]
   (if (game-over? state)
     state
-    (let [new-state (-> state f mm/move-monsters)]
+    (let [new-state (mm/move-monsters (f state))]
       (-> state
           (b/do-battle new-state)
           extra-log-messages
