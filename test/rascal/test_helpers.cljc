@@ -5,14 +5,14 @@
                :cljs [clojure.test.check.properties :as prop :include-macros true])
             [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
-            [rascal.tiles :as tiles :as t]
+            [rascal.tiles :as tiles]
             [rascal.game :as game :refer [make-game left right up down]]
             [rascal.render :refer [render]]))
 
 (def g
   (game/make-game :player   [ 1  1]
                   :board    [ 6  6]
-                  :monsters [(t/make-creature \j "Jackal" 3 3)]))
+                  :monsters [(tiles/make-creature \j "Jackal" 3 3)]))
 
 (defn rendered
   [b]
@@ -25,30 +25,30 @@
 (def pb (comp println game-s))
 
 (defn dir-fns
-  [go]
-  {"left"       #(go % left)
-   "right"      #(go % right)
-   "up"         #(go % up)
-   "down"       #(go % down)
-   "up-left"    #(go % (comp up left))
-   "up-right"   #(go % (comp up right))
-   "down-left"  #(go % (comp down left))
-   "down-right" #(go % (comp down right))})
+  [move]
+  {"left"       #(move % left)
+   "right"      #(move % right)
+   "up"         #(move % up)
+   "down"       #(move % down)
+   "up-left"    #(move % (comp up left))
+   "up-right"   #(move % (comp up right))
+   "down-left"  #(move % (comp down left))
+   "down-right" #(move % (comp down right))})
 
 (defn directions [m] (gen/elements (keys m)))
 
 (defn follow
-  [game path go]
-  ((apply comp (reverse (map #(get (dir-fns go) %) path)))
+  [game path move]
+  ((apply comp (reverse (map #(get (dir-fns move) %) path)))
    game))
 
 (defn on-paths
   "must be pred at the end of each path made of dirs"
-  [start go dirs pred]
+  [start move dirs pred]
   (prop/for-all [path (gen/vector dirs)]
-                (let [end (follow start path go)]
+                (let [end (follow start path move)]
                   (pred end))))
 
 (defn make-path-follower
-  [game go pred]
-  (on-paths game go (directions (dir-fns go)) pred))
+  [game move pred]
+  (on-paths game move (directions (dir-fns move)) pred))
