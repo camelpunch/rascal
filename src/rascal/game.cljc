@@ -43,3 +43,7 @@
 (def right #(update-in % [:player] t/move t/x-axis inc))
 (def up    #(update-in % [:player] t/move t/y-axis dec))
 (def down  #(update-in % [:player] t/move t/y-axis inc))
+(def up-left    (comp up left))
+(def up-right   (comp up right))
+(def down-left  (comp down left))
+(def down-right (comp down right))

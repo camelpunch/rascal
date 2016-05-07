@@ -1,6 +1,6 @@
 (ns rascal.core
   (:require [reagent.core :as r]
-            [rascal.game :as g :refer [make-game move left right up down]]
+            [rascal.game :as g :refer [make-game move left right up down up-left up-right down-left down-right]]
             [rascal.tiles :as t]
             [rascal.render :refer [render]]))
 
@@ -49,10 +49,10 @@
    76 #(move % right)
    75 #(move % up)
    74 #(move % down)
-   89 #(move % (comp left up))
-   85 #(move % (comp right up))
-   78 #(move % (comp left down))
-   77 #(move % (comp right down))})
+   89 #(move % up-left)
+   85 #(move % up-right)
+   78 #(move % down-left)
+   77 #(move % down-right)})
 
 (defn keydown-handler
   [e]
